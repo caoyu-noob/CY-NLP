@@ -14,7 +14,7 @@ public class ModelDao {
 
     private final Logger logger = LogManager.getLogger();
 
-    public boolean saveModel(Model model, boolean isOverride, String datasetDir, String modelName) {
+    public boolean saveModel(Model model, String datasetDir, String modelName, boolean isOverride) {
         Dataset dataset = TDBFactory.createDataset(datasetDir);
         Model dataModel = null;
         dataset.begin(ReadWrite.WRITE);
