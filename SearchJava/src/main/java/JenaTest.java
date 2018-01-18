@@ -1,5 +1,11 @@
+import constants.ModelConstant;
 import dao.ModelDao;
 import org.apache.jena.ontology.OntModel;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import service.FileReader;
@@ -10,44 +16,49 @@ import java.util.*;
 
 public class JenaTest {
 
-    private static String EVENT_FILE_NAME = "sanguoevent_chs.owl";
-    private static String FIGURE_FILE_NAME = "sanguofigure_chs.owl";
-    private static String LOCATION_FILE_NAME = "sanguolocation_chs.owl";
-    private static String TIME_FILE_NAME = "sanguotime_chs.owl";
-
-    private static String SANGUO_EVENT = "SanGuoEvent";
-    private static String SANGUO_FIGURE = "SanGuoFigure";
-    private static String SANGUO_LOCATION = "SanGuoLocation";
-    private static String SANGUO_TIME = "SanGuoTime";
-
-    private static String DATASET = "datasets";
-
-    private static String EVENT_DATASET_NAME = DATASET + "/" + SANGUO_EVENT;
-    private static String FIGURE_DATASET_NAME = DATASET + "/" + SANGUO_FIGURE;
-    private static String LOCATION_DATASET_NAME = DATASET + "/" + SANGUO_LOCATION;
-    private static String TIME_DATASET_NAME = DATASET + "/" + SANGUO_TIME;
-
     private static String NS = "http://www.sim.whu.edu.cn/historyevent.owl";
+
+    private static String EVENT_PREFIX = "prefix event: <http://www.sim.whu.edu.cn/historyevent.owl#>";
+    private static String FIGURE_PREFIX = "prefix figure: <http://www.sim.whu.edu.cn/historyfigure.owl#>";
+    private static String LOCATION_PREFIX = "prefix location: <http://www.sim.whu.edu.cn/historylocation.owl#>";
+    private static String TIME_PREFIX = "prefix time: <http://www.sim.whu.edu.cn/historytime.owl#>";
 
     private static Logger logger = LogManager.getLogger();
 
     public static void main(String[] args) throws IOException{
         Map<String, String> fileNames = new HashMap<>();
-        fileNames.put(SANGUO_EVENT, EVENT_FILE_NAME);
-        fileNames.put(SANGUO_FIGURE, FIGURE_FILE_NAME);
-        fileNames.put(SANGUO_LOCATION, LOCATION_FILE_NAME);
-        fileNames.put(SANGUO_TIME, TIME_FILE_NAME);
+        fileNames.put(ModelConstant.ModelNames.SANGUO_EVENT.get(), ModelConstant.FileNames.EVENT.get());
+        fileNames.put(ModelConstant.ModelNames.SANGUO_FIGURE.get(), ModelConstant.FileNames.FIGURE.get());
+        fileNames.put(ModelConstant.ModelNames.SANGUO_LOCATION.get(), ModelConstant.FileNames.LOCATION.get());
+        fileNames.put(ModelConstant.ModelNames.SANGUO_TIME.get(), ModelConstant.FileNames.TIME.get());
         Map<String, String> datasetNames = new HashMap<>();
-        datasetNames.put(SANGUO_EVENT, EVENT_DATASET_NAME);
-        datasetNames.put(SANGUO_FIGURE, FIGURE_DATASET_NAME);
-        datasetNames.put(SANGUO_LOCATION, LOCATION_DATASET_NAME);
-        datasetNames.put(SANGUO_TIME, TIME_DATASET_NAME);
+        datasetNames.put(ModelConstant.ModelNames.SANGUO_EVENT.get(), ModelConstant.DatasetNames.SANGUO_EVENT.get());
+        datasetNames.put(ModelConstant.ModelNames.SANGUO_FIGURE.get(), ModelConstant.DatasetNames.SANGUO_FIGURE.get());
+        datasetNames.put(ModelConstant.ModelNames.SANGUO_LOCATION.get(), ModelConstant.DatasetNames.SANGUO_LOCATION.get());
+        datasetNames.put(ModelConstant.ModelNames.SANGUO_TIME.get(), ModelConstant.DatasetNames.SANGUO_TIME.get());
         FileReader fileReader = new FileReader(fileNames, datasetNames);
-        Map<String, OntModel> models = fileReader.readOwlFile();
-        boolean isSuccess = fileReader.saveOwlModel();
-        if (isSuccess) {
-            logger.info("Save all models successfully");
+//        Map<String, OntModel> models = fileReader.readOwlFile();
+//        boolean isSuccess = fileReader.saveOwlModel();
+//        if (isSuccess) {
+//            logger.info("Save all models successfully");
+//        }
+        ModelDao modelDao = new ModelDao(datasetNames);
+        String query = EVENT_PREFIX + "select ?s ?p ?o where { event:赤壁之战_sanguozhi ?p ?o}";
+        ResultSet resultSet = modelDao.queryModel(ModelConstant.ModelNames.SANGUO_EVENT.get(), query);
+        while (resultSet.hasNext()) {
+            QuerySolution qs = resultSet.next();
+            Iterator<String> i = qs.varNames();
+            RDFNode p = qs.get("p");
+            RDFNode o = qs.get("o");
+            if (o.isResource()) {
+                System.out.println("resource");
+            }
+            if (o.isLiteral()) {
+                System.out.println("literal");
+            }
+            System.out.println(p.toString() + ": " + o.toString());
         }
+        System.out.println("11");
 //        for (Iterator<OntClass> i = model.listClasses(); i.hasNext();) {
 //            OntClass c = i.next();
 //            System.out.println(c);

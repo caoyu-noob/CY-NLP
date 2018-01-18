@@ -18,11 +18,12 @@ public class FileReader {
     //Map<modelName, datasetName>
     private Map<String, String> owlDatasetNamesMap;
 
-    private final ModelDao modelDao = new ModelDao();
+    private final ModelDao modelDao;
 
     public FileReader(Map<String, String> owlFileNames, Map<String, String> owlDatasetNamesMap) {
         this.owlFileNamesMap = owlFileNames;
         this.owlDatasetNamesMap = owlDatasetNamesMap;
+        modelDao = new ModelDao(owlDatasetNamesMap);
     }
 
     public Map<String, OntModel> readOwlFile() {
@@ -40,7 +41,7 @@ public class FileReader {
         boolean success = true;
         for(Map.Entry<String, String> entry : owlDatasetNamesMap.entrySet()) {
             String modelName = entry.getKey();
-            if (!modelDao.saveModel(modelMap.get(modelName), entry.getValue(), modelName, false)) {
+            if (!modelDao.saveModel(modelMap.get(modelName), modelName, false)) {
                 success = false;
                 break;
             }
