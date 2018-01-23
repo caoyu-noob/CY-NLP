@@ -13,11 +13,6 @@ import java.util.Objects;
 
 public class ModelDao {
 
-    private static String EVENT_PREFIX = "prefix event: <http://www.sim.whu.edu.cn/historyevent.owl#>";
-    private static String FIGURE_PREFIX = "prefix figure: <http://www.sim.whu.edu.cn/historyfigure.owl#>";
-    private static String LOCATION_PREFIX = "prefix location: <http://www.sim.whu.edu.cn/historylocation.owl#>";
-    private static String TIME_PREFIX = "prefix time: <http://www.sim.whu.edu.cn/historytime.owl#>";
-
     private final Logger logger = LogManager.getLogger();
 
     private final Map<String, String> datasetNameMap;

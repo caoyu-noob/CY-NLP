@@ -41,7 +41,7 @@ public class FileReader {
         boolean success = true;
         for(Map.Entry<String, String> entry : owlDatasetNamesMap.entrySet()) {
             String modelName = entry.getKey();
-            if (!modelDao.saveModel(modelMap.get(modelName), modelName, false)) {
+            if (!modelDao.saveModel(modelMap.get(modelName), modelName, true)) {
                 success = false;
                 break;
             }
