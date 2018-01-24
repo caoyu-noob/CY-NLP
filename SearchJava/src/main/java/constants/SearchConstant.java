@@ -5,7 +5,7 @@ package constants;
  */
 public class SearchConstant {
 
-    private static String NS = "http://www.sim.whu.edu.cn/historyevent.owl";
+    public static String NS = "http://www.sim.whu.edu.cn/historyevent.owl";
 
     public enum TargetModel {
         EVENT("event", "prefix event: <http://www.sim.whu.edu.cn/historyevent.owl#> ",

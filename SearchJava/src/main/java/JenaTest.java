@@ -15,6 +15,9 @@ import service.SearchService;
 import java.io.IOException;
 import java.util.*;
 
+import io.github.yizhiru.thulac4j.SegPos;
+import io.github.yizhiru.thulac4j.model.SegItem;
+
 
 public class JenaTest {
 
@@ -34,7 +37,10 @@ public class JenaTest {
         FileReader fileReader = new FileReader(fileNames, datasetNames);
         Map<String, OntModel> models = fileReader.readOwlFile();
         SearchService searchService = new SearchService();
-        Map<Object, Object> res = searchService.findEnityByGivenName(SearchConstant.TargetModel.EVENT, "官渡之战");
+        SegPos segPos = new SegPos("./models/model_c_model.bin", "./models/model_c_dat.bin");
+        String question = "官渡之战在什么地方发生的？";
+        List<SegItem> segResult = segPos.segment(question);
+        Map<Object, Object> res = searchService.findEnityContainsGivenName(SearchConstant.TargetModel.EVENT, "官渡");
         System.out.println("literal");
 //        ModelDao modelDao = new ModelDao(datasetNames);
 //        String query = EVENT_PREFIX + "select ?s ?p ?o where { event:赤壁之战_sanguozhi ?p ?o}";

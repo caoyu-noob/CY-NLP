@@ -1,6 +1,7 @@
 package service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -12,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 
 import constants.ModelConstant;
 import constants.SearchConstant;
+import constants.SearchConstant.TargetModel;
 import dao.ModelDao;
 
 /**
@@ -27,10 +29,37 @@ public class SearchService {
         this.modelDao = new ModelDao(generateSatasetNamesMap());
     }
 
-    public Map<Object, Object> findEnityByGivenName(SearchConstant.TargetModel targetModel, String id) {
+    public Map<Object, Object> findEnityByGivenName(TargetModel targetModel, String id) {
         StringBuffer queryString = new StringBuffer();
         queryString.append(targetModel.getPrefix()).append("select ?s ?p ?o where { ").append(targetModel.getName())
-                .append(":").append(id).append("_sanguozhi ?p ?o}");
+                .append(":").append(id).append("_sanguozhi ?p ?o }");
+        ResultSet resultSet = modelDao.queryModel(targetModel.getModelName().get(), queryString.toString());
+        Map<Object, Object> result = new HashMap<>();
+        while(resultSet.hasNext()) {
+            QuerySolution qs = resultSet.next();
+            RDFNode p = qs.get("p");
+            RDFNode o = qs.get("o");
+            Object key = null;
+            Object value = null;
+            if (p.isLiteral()) {
+                key = p.toString();
+            } else {
+                key = p.asResource();
+            }
+            if (o.isLiteral()) {
+                value = o.toString();
+            } else {
+                value = o.asResource();
+            }
+            result.put(key, value);
+        }
+        return result;
+    }
+
+    public Map<Object, Object> findEnityContainsGivenName(TargetModel targetModel, String id) {
+        StringBuffer queryString = new StringBuffer();
+        queryString.append(targetModel.getPrefix()).append("select ?s ?p ?o where { ")
+                .append("?s ?p ?o FILTER regex(?s, \"" + id + "\") }");
         ResultSet resultSet = modelDao.queryModel(targetModel.getModelName().get(), queryString.toString());
         Map<Object, Object> result = new HashMap<>();
         while(resultSet.hasNext()) {
