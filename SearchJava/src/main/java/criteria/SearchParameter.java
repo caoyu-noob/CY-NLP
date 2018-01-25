@@ -1,5 +1,6 @@
 package criteria;
 
+import constants.SearchConstant.Property;
 import constants.SearchConstant.TargetModel;
 
 /**
@@ -9,7 +10,7 @@ public class SearchParameter {
 
     private TargetModel targetModel = null;
     private String subject = null;
-    private String property = null;
+    private Property property = null;
 
     public TargetModel getTargetModel() {
         return this.targetModel;
@@ -27,11 +28,11 @@ public class SearchParameter {
         this.subject = subject;
     }
 
-    public String getProperty() {
+    public Property getProperty() {
         return this.property;
     }
 
-    public void setProperty(String property) {
+    public void setProperty(Property property) {
         this.property = property;
     }
 }

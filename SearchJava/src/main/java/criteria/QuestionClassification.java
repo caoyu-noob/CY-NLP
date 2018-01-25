@@ -40,7 +40,7 @@ public class QuestionClassification {
 
     public enum UncertainPron {
         U1("什么", "r"),
-        U2("那些","r"),
+        U2("哪些","r"),
         U3("啥","r");
 
         private SegItem segItem;
@@ -60,6 +60,7 @@ public class QuestionClassification {
         WHO1("人","n"),
         WHO2("人物","n"),
         WHO3("将领","n"),
+        WHO4("参与者","n"),
         WHERE1("地方","n"),
         WHERE2("地点","n"),
         WHERE3("位置","n");
@@ -104,7 +105,8 @@ public class QuestionClassification {
                 }
                 if (segItemPosMap.containsKey(CertainNoun.WHO1.getSegItem()) ||
                         segItemPosMap.containsKey(CertainNoun.WHO2.getSegItem()) ||
-                        segItemPosMap.containsKey(CertainNoun.WHO3.getSegItem())) {
+                        segItemPosMap.containsKey(CertainNoun.WHO3.getSegItem()) ||
+                        segItemPosMap.containsKey(CertainNoun.WHO4.getSegItem())) {
                     return QuestionType.WHO;
                 }
             }

@@ -1,5 +1,6 @@
 package service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 
 import constants.ModelConstant;
 import constants.SearchConstant;
+import constants.SearchConstant.Property;
 import constants.SearchConstant.TargetModel;
 import dao.ModelDao;
 
@@ -56,29 +58,37 @@ public class SearchService {
         return result;
     }
 
-    public Map<Object, Object> findEnityContainsGivenName(TargetModel targetModel, String id) {
+    public List<String> findGivenPropertyContainGivenName(TargetModel targetModel, String id, Property property) {
+        if (targetModel == null || id == null || property == null) {
+            return null;
+        }
         StringBuffer queryString = new StringBuffer();
         queryString.append(targetModel.getPrefix()).append("select ?s ?p ?o where { ")
-                .append("?s ?p ?o FILTER regex(?s, \"" + id + "\") }");
+                .append("?s ").append(targetModel.getName()).append(":").append(property.getProperty()).append(" ?o ")
+                .append("FILTER regex(str(?s), \"").append(id).append("\")}");
         ResultSet resultSet = modelDao.queryModel(targetModel.getModelName().get(), queryString.toString());
-        Map<Object, Object> result = new HashMap<>();
+        List<String> result = new ArrayList<>();
         while(resultSet.hasNext()) {
             QuerySolution qs = resultSet.next();
-            RDFNode p = qs.get("p");
             RDFNode o = qs.get("o");
-            Object key = null;
-            Object value = null;
-            if (p.isLiteral()) {
-                key = p.toString();
-            } else {
-                key = p.asResource();
-            }
             if (o.isLiteral()) {
-                value = o.toString();
+                result.add(o.asLiteral().getLexicalForm());
             } else {
-                value = o.asResource();
+                result.add(findLabelByGivenId(Property.getTargetModelByProperty(property), o.asResource().getURI()));
             }
-            result.put(key, value);
+        }
+        return result;
+    }
+
+    private String findLabelByGivenId(TargetModel targetModel, String id) {
+        StringBuffer queryString = new StringBuffer();
+        queryString.append(SearchConstant.RDFS).append("select ?s ?p ?o where { <").append(id).append("> rdfs:label ?o}");
+        ResultSet resultSet = modelDao.queryModel(targetModel.getModelName().get(), queryString.toString());
+        String result = StringUtils.EMPTY;
+        while(resultSet.hasNext()) {
+            QuerySolution qs = resultSet.next();
+            RDFNode o = qs.get("o");
+            result = o.asLiteral().getLexicalForm();
         }
         return result;
     }
