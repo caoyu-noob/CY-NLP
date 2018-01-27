@@ -1,24 +1,15 @@
-import constants.ModelConstant;
-import constants.SearchConstant;
-import dao.ModelDao;
-import org.apache.jena.ontology.OntModel;
-import org.apache.jena.query.QuerySolution;
-import org.apache.jena.query.ResultSet;
-import org.apache.jena.rdf.model.Literal;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Resource;
+package com;
+
+import com.constants.ModelConstant;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import service.AnswerService;
-import service.FileReader;
-import service.SearchService;
+import com.service.AnswerService;
+import com.service.FileReader;
 
 import java.io.IOException;
 import java.util.*;
-
-import io.github.yizhiru.thulac4j.SegPos;
-import io.github.yizhiru.thulac4j.model.SegItem;
 
 
 public class JenaTest {
@@ -30,7 +21,8 @@ public class JenaTest {
 //        saveModels();
         //Please run this function when you run it in the first time in you local environment
 
-        AnswerService answerService = new AnswerService();
+
+        AnswerService answerService = new AnswerService(ModelConstant.CONSOLE_MODE);
         while(true) {
             Scanner sc = new Scanner(System.in);
             System.out.println("-----------");

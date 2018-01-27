@@ -1,4 +1,4 @@
-package criteria;
+package com.criteria;
 
 import java.util.HashMap;
 import java.util.HashSet;

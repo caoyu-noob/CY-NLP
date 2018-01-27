@@ -1,4 +1,4 @@
-package service;
+package com.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,11 +12,11 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import constants.ModelConstant;
-import constants.SearchConstant;
-import constants.SearchConstant.Property;
-import constants.SearchConstant.TargetModel;
-import dao.ModelDao;
+import com.constants.ModelConstant;
+import com.constants.SearchConstant;
+import com.constants.SearchConstant.Property;
+import com.constants.SearchConstant.TargetModel;
+import com.dao.ModelDao;
 
 /**
  * Created by cao_y on 2018/1/22.

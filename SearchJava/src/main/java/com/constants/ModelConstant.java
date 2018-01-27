@@ -1,4 +1,4 @@
-package constants;
+package com.constants;
 
 public class ModelConstant {
     private static String DATASET = "datasets";
@@ -7,6 +7,9 @@ public class ModelConstant {
     private static String SANGUO_FIGURE = "SanGuoFigure";
     private static String SANGUO_LOCATION = "SanGuoLocation";
     private static String SANGUO_TIME = "SanGuoTime";
+
+    public static int CONSOLE_MODE = 1;
+    public static int WEB_MODE = 2;
 
     //File names for different owl files
     public enum FileNames {

@@ -1,7 +1,7 @@
-package criteria;
+package com.criteria;
 
-import constants.SearchConstant.Property;
-import constants.SearchConstant.TargetModel;
+import com.constants.SearchConstant.Property;
+import com.constants.SearchConstant.TargetModel;
 
 /**
  * Created by cao_y on 2018/1/24.

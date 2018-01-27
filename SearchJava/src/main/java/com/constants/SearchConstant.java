@@ -1,6 +1,4 @@
-package constants;
-
-import java.util.Properties;
+package com.constants;
 
 /**
  * Created by cao_y on 2018/1/22.

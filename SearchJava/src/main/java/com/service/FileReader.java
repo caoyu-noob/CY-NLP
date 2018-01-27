@@ -1,13 +1,11 @@
-package service;
+package com.service;
 
-import dao.ModelDao;
+import com.dao.ModelDao;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.rdf.model.ModelFactory;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class FileReader {

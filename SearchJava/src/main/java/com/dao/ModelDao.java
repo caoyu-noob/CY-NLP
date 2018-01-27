@@ -1,4 +1,4 @@
-package dao;
+package com.dao;
 
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;

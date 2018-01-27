@@ -1,17 +1,13 @@
-package criteria;
+package com.criteria;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import constants.SearchConstant;
-import constants.SearchConstant.TargetModel;
-import criteria.QuestionClassification.QuestionType;
-import javafx.util.Pair;
+import com.constants.SearchConstant;
+import com.constants.SearchConstant.TargetModel;
+import com.criteria.QuestionClassification.QuestionType;
 
 import io.github.yizhiru.thulac4j.model.SegItem;
 
