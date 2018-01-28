@@ -1,0 +1,36 @@
+.navbar-brand {
+    font-size : 30px;
+}
+
+.navbar-right a {
+    font-size: 18px;
+    color: white;
+}
+
+#setting a.dropdown-toggle {
+    margin:5px 5px;
+    background-color: #ac2925;
+    color: white;
+    border-radius: 5px;
+}
+
+#status a {
+    margin:5px 5px;
+    /*color: #419641;*/
+    font-weight: bold;
+    /*color: #c9302c;*/
+}
+
+#setting a {
+    cursor: pointer;
+}
+
+.starter-template {
+    padding: 50px 20px;
+    text-align: center;
+}
+
+embed {
+    height: 16px;
+    width: 16px;
+}
