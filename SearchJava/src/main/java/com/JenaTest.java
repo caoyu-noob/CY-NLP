@@ -9,6 +9,8 @@ import com.service.AnswerService;
 import com.service.FileReader;
 
 import java.io.IOException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 
@@ -20,7 +22,6 @@ public class JenaTest {
         //Please run this function when you run it in the first time in you local environment
 //        saveModels();
         //Please run this function when you run it in the first time in you local environment
-
 
         AnswerService answerService = new AnswerService(ModelConstant.CONSOLE_MODE);
         while(true) {

@@ -43,22 +43,27 @@ public class AnswerService {
         segPos = new SegPos(cModelPath, cDatPath);
     }
 
-    public void AnswerQuestion(String question) {
+    public String AnswerQuestion(String question) {
         List<SegItem> segResult = segPos.segment(question);
-        GetAnswer(segResult);
+        return GetAnswer(segResult);
     }
 
-    private void GetAnswer(List<SegItem> segItems) {
+    private String GetAnswer(List<SegItem> segItems) {
         QuestionType questionType = questionClassification.classifyQuestion(segItems);
         SearchParameter searchParameter = decideTarget.getTarget(questionType, segItems);
         List<String> result = searchService.findGivenPropertyContainGivenName(searchParameter.getTargetModel(), searchParameter.getSubject(),
                 searchParameter.getProperty());
+        String answer = StringUtils.EMPTY;
         if (CollectionUtils.isEmpty(result)) {
             System.out.println("无法回答");
+            answer = "无法回答";
         } else {
             for (String item : result) {
                 System.out.println(item);
+                answer = answer + item + "\n";
             }
+            answer = answer.substring(0, answer.length() - 2);
         }
+        return answer;
     }
 }

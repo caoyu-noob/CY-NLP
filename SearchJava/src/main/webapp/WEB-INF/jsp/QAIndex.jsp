@@ -31,10 +31,10 @@
                 </li>
                 <li id="setting">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        设置<b class="caret"></b>
+                        <i class="iconfont icon-shezhi"></i> 设置<b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a>重置数据</a></li>
+                        <li><a><i class="iconfont icon-weixiu"></i> 重置数据</a></li>
                     </ul>
                 </li>
             </ul>
@@ -46,8 +46,22 @@
         <div class="starter-template">
             <h1>
                 请输入关于三国志的问题
-                <i class="iconfont icon-info"></i>
+                <i class="iconfont icon-bangzhuxiantiao"></i>
             </h1>
+        </div>
+        <div class="input-group" style="width:100%;">
+            <form class="form-inline text-center question-form">
+                <div class="form-group">
+                    <input id="search-content" type="text"
+                           class="form-control input-lg" placeholder="请输入一个问题">
+                </div>
+                <button id="search-btn" type="button" class="btn btn-primary btn-lg">
+                    <i class="iconfont icon-sousuo"></i> 搜索
+                </button>
+            </form>
+        </div>
+        <div class="answer-area">
+            <h2></h2>
         </div>
     </div>
 </body>
