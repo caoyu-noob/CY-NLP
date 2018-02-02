@@ -5,7 +5,10 @@ import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.rdf.model.ModelFactory;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class FileReader {
@@ -28,7 +31,8 @@ public class FileReader {
         Map<String, OntModel> modelMap = new HashMap<>();
         for(Map.Entry<String, String> entry : owlFileNamesMap.entrySet()) {
             OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
-            model.read(this.getClass().getClassLoader().getResource(entry.getValue()).toString(), "RDF/XML");
+//            model.read(this.getClass().getClassLoader().getResource(entry.getValue()).toString(), "RDF/XML");
+            model.read(entry.getValue(), "RDF/XML");
             modelMap.put(entry.getKey(), model);
         }
       return modelMap;
@@ -47,5 +51,15 @@ public class FileReader {
         return success;
     }
 
+    public List<String> checkOwlFileValidity() {
+        List<String> checkList = new ArrayList<>();
+        this.owlFileNamesMap.entrySet().stream().forEach(item -> {
+            File file = new File(item.getValue());
+            if (!file.isFile()) {
+                checkList.add(item.getValue());
+            }
+        });
+        return checkList;
+    }
 
 }

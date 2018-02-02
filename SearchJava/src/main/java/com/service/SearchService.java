@@ -1,5 +1,6 @@
 package com.service;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,8 +28,10 @@ public class SearchService {
 
     private final ModelDao modelDao;
 
-    public SearchService() {
-        this.modelDao = new ModelDao(generateSatasetNamesMap());
+    private final FileAndDatasetNameService fileAndDatasetNameService = new FileAndDatasetNameService();
+
+    public SearchService(int applicationMode) {
+        this.modelDao = new ModelDao(fileAndDatasetNameService.getDatasetNamesMap(applicationMode));
     }
 
     public Map<Object, Object> findEnityByGivenName(TargetModel targetModel, String id) {
@@ -80,6 +83,15 @@ public class SearchService {
         return result;
     }
 
+    public boolean checkDataAvailable() {
+        for(ModelConstant.ModelNames name : ModelConstant.ModelNames.values()) {
+            if (!modelDao.testModel(name.get())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private String findLabelByGivenId(TargetModel targetModel, String id) {
         StringBuffer queryString = new StringBuffer();
         queryString.append(SearchConstant.RDFS).append("select ?s ?p ?o where { <").append(id).append("> rdfs:label ?o}");
@@ -93,13 +105,23 @@ public class SearchService {
         return result;
     }
 
-    private Map<String, String> generateSatasetNamesMap() {
-        Map<String, String> datasetNamesMap = new HashMap<>();
-        datasetNamesMap.put(ModelConstant.ModelNames.SANGUO_EVENT.get(), ModelConstant.DatasetNames.SANGUO_EVENT.get());
-        datasetNamesMap.put(ModelConstant.ModelNames.SANGUO_FIGURE.get(), ModelConstant.DatasetNames.SANGUO_FIGURE.get());
-        datasetNamesMap.put(ModelConstant.ModelNames.SANGUO_LOCATION.get(), ModelConstant.DatasetNames.SANGUO_LOCATION.get());
-        datasetNamesMap.put(ModelConstant.ModelNames.SANGUO_TIME.get(), ModelConstant.DatasetNames.SANGUO_TIME.get());
-        return datasetNamesMap;
-    }
+//    private Map<String, String> generateDatasetNamesMap(int applicationMode) {
+//        Map<String, String> datasetNamesMap = new HashMap<>();
+//        String prefix = applicationMode == ModelConstant.CONSOLE_MODE ? "" : getCurrentRootDir() + "/";
+//        datasetNamesMap.put(ModelConstant.ModelNames.SANGUO_EVENT.get(), prefix + ModelConstant.DatasetNames.SANGUO_EVENT.get());
+//        datasetNamesMap.put(ModelConstant.ModelNames.SANGUO_FIGURE.get(), prefix + ModelConstant.DatasetNames.SANGUO_FIGURE.get());
+//        datasetNamesMap.put(ModelConstant.ModelNames.SANGUO_LOCATION.get(), prefix + ModelConstant.DatasetNames.SANGUO_LOCATION.get());
+//        datasetNamesMap.put(ModelConstant.ModelNames.SANGUO_TIME.get(), prefix + ModelConstant.DatasetNames.SANGUO_TIME.get());
+//        return datasetNamesMap;
+//    }
+
+//    private String getCurrentRootDir() {
+//        File file = new File(this.getClass().getResource("/").getFile());
+//        int i = 4;
+//        while (i-- > 0) {
+//            file = file.getParentFile();
+//        }
+//        return file.getAbsolutePath();
+//    }
 
 }

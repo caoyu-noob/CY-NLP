@@ -22,7 +22,8 @@ public class JenaTest {
         //Please run this function when you run it in the first time in you local environment
 //        saveModels();
         //Please run this function when you run it in the first time in you local environment
-
+        List<String> s = new LinkedList<>();
+        s.addAll(null);
         AnswerService answerService = new AnswerService(ModelConstant.CONSOLE_MODE);
         while(true) {
             Scanner sc = new Scanner(System.in);

@@ -20,6 +20,14 @@ $(document).ready(function() {
   $('#search-content').bind('input', function(){
     inputChange();
   });
+  $('#search-content').bind('keypress', function() {
+    if (event.keyCode == 13) {
+      onSearchClick();
+    }
+  });
+  $('#reset-data').click(function() {
+    resetData();
+  })
 });
 
 function onSearchClick() {
@@ -30,7 +38,6 @@ function onSearchClick() {
     $.post(url, function(res){
       displayAnswer(res);
       prevQuestion = question;
-
     });
   }
   $('#search-btn').attr('disabled', false);
@@ -47,4 +54,20 @@ function inputChange() {
 function displayAnswer(res) {
   console.log(res['answerString']);
   $('.answer-area h2').html(res['answerString']);
+}
+
+function resetData() {
+  var isReset = window.confirm('该操作将会清除现有数据并重新读取OWL文件，确定继续吗？');
+  if (isReset) {
+    var url = '/QA/resetData';
+    $.post(url, function(res){
+      var isSuccess = res['isSuccess'];
+      if (isSuccess === 'false') {
+        window.alert(res['message']);
+      } else {
+        window.alert(res['message']);
+        location.reload();
+      }
+    });
+  }
 }

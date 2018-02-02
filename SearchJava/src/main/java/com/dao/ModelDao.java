@@ -4,6 +4,7 @@ import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.tdb.TDBFactory;
+import org.apache.jena.util.iterator.ExtendedIterator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -19,6 +20,16 @@ public class ModelDao {
 
     public ModelDao(Map<String, String> datasetNameMap) {
         this.datasetNameMap = datasetNameMap;
+    }
+
+    public boolean testModel(String modelName) {
+        try {
+            Dataset dataset = TDBFactory.createDataset(datasetNameMap.get(modelName));
+        } catch (Exception e) {
+            logger.error("Cannot read the data file = {}, modelName = {}", datasetNameMap.get(modelName), modelName);
+            return false;
+        }
+        return true;
     }
 
     // Save model obtained from owl file into local TDB files
@@ -62,7 +73,9 @@ public class ModelDao {
         Dataset dataset = TDBFactory.createDataset(datasetNameMap.get(modelName));
         Model dataModel = dataset.getNamedModel(modelName);
         QueryExecution query = QueryExecutionFactory.create(queryString, dataModel);
+        dataset.begin(ReadWrite.READ);
         ResultSet result = query.execSelect();
+        dataset.close();
         return result;
     }
 }

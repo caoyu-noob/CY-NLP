@@ -34,7 +34,7 @@
                         <i class="iconfont icon-shezhi"></i> 设置<b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a><i class="iconfont icon-weixiu"></i> 重置数据</a></li>
+                        <li id="reset-data"><a><i class="iconfont icon-weixiu"></i> 重置数据</a></li>
                     </ul>
                 </li>
             </ul>
@@ -50,7 +50,7 @@
             </h1>
         </div>
         <div class="input-group" style="width:100%;">
-            <form class="form-inline text-center question-form">
+            <div class="form-inline text-center question-form">
                 <div class="form-group">
                     <input id="search-content" type="text"
                            class="form-control input-lg" placeholder="请输入一个问题">
@@ -58,7 +58,7 @@
                 <button id="search-btn" type="button" class="btn btn-primary btn-lg">
                     <i class="iconfont icon-sousuo"></i> 搜索
                 </button>
-            </form>
+            </div>
         </div>
         <div class="answer-area">
             <h2></h2>

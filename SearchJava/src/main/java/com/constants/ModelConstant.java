@@ -49,10 +49,10 @@ public class ModelConstant {
 
     //Saved dirs for different models
     public enum DatasetNames {
-        SANGUO_EVENT(DATASET + "/SanGuoEvent"),
-        SANGUO_FIGURE(DATASET + "/SanGuoFigure"),
-        SANGUO_LOCATION(DATASET + "/SanGuoLocation"),
-        SANGUO_TIME(DATASET + "/SanGuoTime");
+        SANGUO_EVENT(DATASET + "\\SanGuoEvent"),
+        SANGUO_FIGURE(DATASET + "\\SanGuoFigure"),
+        SANGUO_LOCATION(DATASET + "\\SanGuoLocation"),
+        SANGUO_TIME(DATASET + "\\SanGuoTime");
 
         private String name;
 

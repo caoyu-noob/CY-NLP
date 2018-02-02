@@ -1,5 +1,6 @@
 package com.service;
 
+import java.io.File;
 import java.io.IOException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -24,21 +25,23 @@ public class AnswerService {
 
     private final DecideTarget decideTarget = new DecideTarget();
 
-    private final SearchService searchService = new SearchService();
+    private final SearchService searchService;
+
+    private final FileAndDatasetNameService fileAndDatasetNameService = new FileAndDatasetNameService();
 
     private static SegPos segPos;
 
     public AnswerService(int applicationMode) throws IOException {
+        this.searchService = new SearchService(applicationMode);
         String cModelPath = StringUtils.EMPTY;
         String cDatPath = StringUtils.EMPTY;
         if (applicationMode == ModelConstant.CONSOLE_MODE) {
-            cModelPath = "./models/model_c_model.bin";
-            cDatPath = "./models/model_c_dat.bin";
+            cModelPath = ".\\models\\model_c_model.bin";
+            cDatPath = ".\\models\\model_c_dat.bin";
         } else if (applicationMode == ModelConstant.WEB_MODE) {
-//            System.out.println(this.getClass().getResource("/").getPath());
-//            String absPath = this.getClass().getResource("/").getPath();
-            cModelPath = "C:/Develop/CY-NLP/SearchJava/models/model_c_model.bin";
-            cDatPath = "C:/Develop/CY-NLP/SearchJava/models/model_c_dat.bin";
+            String rootDir = fileAndDatasetNameService.getCurrentRootDir();
+            cModelPath = rootDir + "\\models\\model_c_model.bin";
+            cDatPath = rootDir + "\\models\\model_c_dat.bin";
         }
         segPos = new SegPos(cModelPath, cDatPath);
     }
@@ -60,10 +63,19 @@ public class AnswerService {
         } else {
             for (String item : result) {
                 System.out.println(item);
-                answer = answer + item + "\n";
+                answer = answer + item + ", ";
             }
             answer = answer.substring(0, answer.length() - 2);
         }
         return answer;
     }
+
+//    private String getCurrentRootDir() {
+//        File file = new File(this.getClass().getResource("/").getFile());
+//        int i = 4;
+//        while (i-- > 0) {
+//            file = file.getParentFile();
+//        }
+//        return file.getAbsolutePath();
+//    }
 }
