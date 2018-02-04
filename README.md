@@ -39,3 +39,5 @@ models文件夹下，SearchJava文件夹下的owl文件夹拷贝到tomcat根目�
     这里的docBase即为生成的war包的名称。
 4. 运行tomcat/bin文件夹下的startup.bat或startup.sh，运行tomcat并部署Web应用，待显示部署成功后，使用
 localhost:8080/QA即可访问QA系统的主页。 也可以使用IDE来运行web应用，这里不详细描述。
+
+    第一次运行时可能会提示数据读取失败，这时候需要通过设置菜单的重置数据功能重新读取owl文件的内容并构建数据库
