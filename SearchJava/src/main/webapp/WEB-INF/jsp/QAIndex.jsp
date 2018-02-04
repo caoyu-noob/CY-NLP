@@ -6,18 +6,21 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<% String path = request.getContextPath(); %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 
 <head>
-    <title>三国志QA</title>
-    <link type="text/css" href="/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link type="text/css" href="/css/index.css" rel="stylesheet">
-    <link type="text/css" href="/css/iconfont.css" rel="stylesheet">
-    <link rel="shortcut icon" href="/images/favicon.ico">
-    <script type="text/javascript" src="/js/jquery-3.3.1.js"></script>
-    <script type="text/javascript" src="/bootstrap/js/bootstrap.js"></script>
-    <script type="text/javascript" src="/js/index.js"></script>
+    <title path="<%=path %>">三国志QA</title>
+    <link type="text/css" href="<%=path %>/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link type="text/css" href="<%=path %>/css/index.css" rel="stylesheet">
+    <link type="text/css" href="<%=path %>/css/iconfont.css" rel="stylesheet">
+    <link type="text/css" href="<%=path %>/css/loaders.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="<%=path %>/images/favicon.ico">
+    <script type="text/javascript" src="<%=path %>/js/jquery-3.3.1.js"></script>
+    <script type="text/javascript" src="<%=path %>/bootstrap/js/bootstrap.js"></script>
+    <script type="text/javascript" src="<%=path %>/js/index.js"></script>
+    <script type="text/javascript" src="<%=path %>/js/loaders.css.js"></script>
 </head>
 <body>
     <nav class="navbar navbar-inverse nav-bar-fixed-top">
@@ -46,7 +49,8 @@
         <div class="starter-template">
             <h1>
                 请输入关于三国志的问题
-                <i class="iconfont icon-bangzhuxiantiao"></i>
+                <i id="help-icon" class="iconfont icon-bangzhuxiantiao" data-toggle="tooltip" data-placement="bottom"
+                data-html="true" title="<iframe src='/css/tooltip.html'  frameborder='0'></iframe>"></i>
             </h1>
         </div>
         <div class="input-group" style="width:100%;">
@@ -60,10 +64,12 @@
                 </button>
             </div>
         </div>
+        <div id="loading" class="loader-inner ball-pulse"></div>
         <div class="answer-area">
             <h2></h2>
         </div>
     </div>
+
 </body>
 
 

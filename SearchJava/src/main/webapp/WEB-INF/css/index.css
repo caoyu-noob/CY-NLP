@@ -21,7 +21,7 @@
     /*color: #c9302c;*/
 }
 
-#setting a {
+#setting a, #help-icon {
     cursor: pointer;
 }
 
@@ -42,3 +42,18 @@
 .container>div {
     text-align: center;
 }
+
+.tooltip-inner {
+    max-width: 350px;
+}
+
+#loading {
+    text-align: center;
+}
+
+#loading > div {
+    width: 20px;
+    height: 20px;
+    background-color: #337ab7;
+}
+
