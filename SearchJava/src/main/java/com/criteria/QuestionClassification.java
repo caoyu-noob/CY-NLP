@@ -15,10 +15,24 @@ import io.github.yizhiru.thulac4j.model.SegItem;
 public class QuestionClassification {
 
     public enum QuestionType {
+        // the subject of the question is location, e.g. XX战役在哪发生的, XX是哪里人
         WHERE,
+        // the subject of the question is time, e.g. XX之战什么时候发生的，XX什么时候出生的
         WHEN,
+        // the subject of the question is person, e.g. XX之战有谁参与
         WHO,
+        // the subject of the question is event, e.g. XX参加了什么事件
+        WHAT,
+        // the subject is introduction, e.g. XX是谁，介绍下XX事件 （该问题回答方式会将实体的所有相关属性一一列出）
+        INRODUCTION,
+        // the subject is some other property, e.g. XX事件的影响， XX的官职
+        OTHER,
+        // cannot understand the question at the first stage
         UNKNOW;
+
+    }
+
+    public enum KeyWordForWhere {
 
     }
 
@@ -76,6 +90,7 @@ public class QuestionClassification {
         }
     }
 
+    //Determine the question type at the first stage
     public QuestionType classifyQuestion(List<SegItem> segItems) {
         Set<SegItem> segItemsSet = new HashSet<>();
         segItemsSet.addAll(segItems);
@@ -128,5 +143,10 @@ public class QuestionClassification {
             result.put(segItems.get(i), i);
         }
         return result;
+    }
+
+    //determine if the current question is for the introduction of a person
+    private boolean isForPersonIntroduction(List<SegItem> segItems) {
+
     }
 }

@@ -29,6 +29,8 @@ public class AnswerService {
 
     private final FileAndDatasetNameService fileAndDatasetNameService = new FileAndDatasetNameService();
 
+    private final String fileSeparator = System.getProperty("file.separator");
+
     private static SegPos segPos;
 
     public AnswerService(int applicationMode) throws IOException {
@@ -36,12 +38,12 @@ public class AnswerService {
         String cModelPath = StringUtils.EMPTY;
         String cDatPath = StringUtils.EMPTY;
         if (applicationMode == ModelConstant.CONSOLE_MODE) {
-            cModelPath = ".\\models\\model_c_model.bin";
-            cDatPath = ".\\models\\model_c_dat.bin";
+            cModelPath = "." + fileSeparator + "models" + fileSeparator + "model_c_model.bin";
+            cDatPath = "." + fileSeparator + "models" + fileSeparator +"model_c_dat.bin";
         } else if (applicationMode == ModelConstant.WEB_MODE) {
             String rootDir = fileAndDatasetNameService.getCurrentRootDir();
-            cModelPath = rootDir + "\\models\\model_c_model.bin";
-            cDatPath = rootDir + "\\models\\model_c_dat.bin";
+            cModelPath = rootDir + fileSeparator + "models" + fileSeparator + "model_c_model.bin";
+            cDatPath = rootDir + fileSeparator + "models" + fileSeparator +"model_c_dat.bin";
         }
         segPos = new SegPos(cModelPath, cDatPath);
     }
@@ -52,14 +54,16 @@ public class AnswerService {
     }
 
     private String GetAnswer(List<SegItem> segItems) {
+        String answer = StringUtils.EMPTY;
+        if (segItems.isEmpty()) {
+            answer = "好像不能理解这个问题。。。";
+        }
         QuestionType questionType = questionClassification.classifyQuestion(segItems);
         SearchParameter searchParameter = decideTarget.getTarget(questionType, segItems);
         List<String> result = searchService.findGivenPropertyContainGivenName(searchParameter.getTargetModel(), searchParameter.getSubject(),
                 searchParameter.getProperty());
-        String answer = StringUtils.EMPTY;
         if (CollectionUtils.isEmpty(result)) {
-            System.out.println("无法回答");
-            answer = "无法回答";
+            answer = "好像不能理解这个问题。。。";
         } else {
             for (String item : result) {
                 System.out.println(item);

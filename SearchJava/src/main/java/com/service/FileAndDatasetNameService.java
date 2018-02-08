@@ -11,9 +11,12 @@ import com.constants.ModelConstant;
  */
 public class FileAndDatasetNameService {
 
+    private final String fileSeparator = System.getProperty("file.separator");
+
     public Map<String, String> getFileNamesMap(int applicationMode) {
         Map<String, String> fileNamesMap = new HashMap<>();
-        String prefix = applicationMode == ModelConstant.CONSOLE_MODE ? "owl\\" : getCurrentRootDir() + "\\owl\\";
+        String prefix = applicationMode == ModelConstant.CONSOLE_MODE ? "owl" + fileSeparator  :
+                getCurrentRootDir() + fileSeparator + "owl" + fileSeparator;
         fileNamesMap.put(ModelConstant.ModelNames.SANGUO_EVENT.get(), prefix + ModelConstant.FileNames.EVENT.get());
         fileNamesMap.put(ModelConstant.ModelNames.SANGUO_FIGURE.get(), prefix + ModelConstant.FileNames.FIGURE.get());
         fileNamesMap.put(ModelConstant.ModelNames.SANGUO_LOCATION.get(), prefix + ModelConstant.FileNames.LOCATION.get());
@@ -23,7 +26,7 @@ public class FileAndDatasetNameService {
 
     public Map<String, String> getDatasetNamesMap(int applicationMode) {
         Map<String, String> datasetNamesMap = new HashMap<>();
-        String prefix = applicationMode == ModelConstant.CONSOLE_MODE ? "" : getCurrentRootDir() + "\\";
+        String prefix = applicationMode == ModelConstant.CONSOLE_MODE ? "" : getCurrentRootDir() + fileSeparator;
         datasetNamesMap.put(ModelConstant.ModelNames.SANGUO_EVENT.get(), prefix + ModelConstant.DatasetNames.SANGUO_EVENT.get());
         datasetNamesMap.put(ModelConstant.ModelNames.SANGUO_FIGURE.get(), prefix + ModelConstant.DatasetNames.SANGUO_FIGURE.get());
         datasetNamesMap.put(ModelConstant.ModelNames.SANGUO_LOCATION.get(), prefix + ModelConstant.DatasetNames.SANGUO_LOCATION.get());
