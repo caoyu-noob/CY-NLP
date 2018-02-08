@@ -50,7 +50,7 @@
             <h1>
                 请输入关于三国志的问题
                 <i id="help-icon" class="iconfont icon-bangzhuxiantiao" data-toggle="tooltip" data-placement="bottom"
-                data-html="true" title="<iframe src='/css/tooltip.html'  frameborder='0'></iframe>"></i>
+                data-html="true" title="<iframe src='<%=path %>/css/tooltip.html'  frameborder='0'></iframe>"></i>
             </h1>
         </div>
         <div class="input-group" style="width:100%;">
