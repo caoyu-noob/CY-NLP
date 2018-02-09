@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.criteria.templates.PersonIntroduction;
+import com.criteria.templates.TemplateMatcher;
+
 import io.github.yizhiru.thulac4j.model.SegItem;
 
 /**
@@ -13,6 +16,8 @@ import io.github.yizhiru.thulac4j.model.SegItem;
  * design a criteria to match different question type
  */
 public class QuestionClassification {
+
+    private PersonIntroduction.templates personIntroduction = new PersonIntroduction.templates();
 
     public enum QuestionType {
         // the subject of the question is location, e.g. XX战役在哪发生的, XX是哪里人
@@ -146,7 +151,8 @@ public class QuestionClassification {
     }
 
     //determine if the current question is for the introduction of a person
-    private boolean isForPersonIntroduction(List<SegItem> segItems) {
-
+    public boolean isForPersonIntroduction(List<SegItem> segItems) {
+        boolean a = TemplateMatcher.Match(segItems, personIntroduction, 2);
+        return a;
     }
 }

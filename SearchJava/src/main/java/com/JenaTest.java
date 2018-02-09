@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class JenaTest {
@@ -22,6 +24,9 @@ public class JenaTest {
         //Please run this function when you run it in the first time in you local environment
 //        saveModels();
         //Please run this function when you run it in the first time in you local environment
+        String regex = ".*";
+        String t = "dsfsdfsddfs";
+        System.out.println(Pattern.matches(regex, t));
         AnswerService answerService = new AnswerService(ModelConstant.CONSOLE_MODE);
         while(true) {
             Scanner sc = new Scanner(System.in);

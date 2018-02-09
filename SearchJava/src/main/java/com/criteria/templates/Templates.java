@@ -8,7 +8,11 @@ import io.github.yizhiru.thulac4j.model.SegItem;
  */
 public interface Templates {
 
-    List<List<SegItem>> getTemplate();
+    public static  interface templates {
+        List<List<SegItem>> getTemplate();
 
-    List<Integer> getMatchMode();
+        List<Integer> getMatchMode();
+
+        List<Integer> getErrorLimits();
+    }
 }

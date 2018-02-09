@@ -12,6 +12,7 @@ import com.criteria.DecideTarget;
 import com.criteria.QuestionClassification;
 import com.criteria.QuestionClassification.QuestionType;
 import com.criteria.SearchParameter;
+import javafx.util.Pair;
 
 import io.github.yizhiru.thulac4j.SegPos;
 import io.github.yizhiru.thulac4j.model.SegItem;
@@ -58,12 +59,13 @@ public class AnswerService {
         if (segItems.isEmpty()) {
             answer = "好像不能理解这个问题。。。";
         }
+        System.out.println(questionClassification.isForPersonIntroduction(segItems));
         QuestionType questionType = questionClassification.classifyQuestion(segItems);
         SearchParameter searchParameter = decideTarget.getTarget(questionType, segItems);
         List<String> result = searchService.findGivenPropertyContainGivenName(searchParameter.getTargetModel(), searchParameter.getSubject(),
                 searchParameter.getProperty());
         if (CollectionUtils.isEmpty(result)) {
-            answer = "好像不能理解这个问题。。。";
+            answer = "知道你在问什么，但真的找不到相关的数据啊。。。";
         } else {
             for (String item : result) {
                 System.out.println(item);
@@ -72,6 +74,15 @@ public class AnswerService {
             answer = answer.substring(0, answer.length() - 2);
         }
         return answer;
+    }
+
+    /**
+     * remove unnecessary punctuations and remain only the first question
+     * @param question
+     * @return if there are more than one questions in this string, then return true
+     */
+    private Pair<String, Boolean> preProcessQuestion(String question) {
+
     }
 
 //    private String getCurrentRootDir() {
