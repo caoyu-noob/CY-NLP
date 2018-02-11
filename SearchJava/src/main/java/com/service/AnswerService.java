@@ -50,12 +50,21 @@ public class AnswerService {
     }
 
     public String AnswerQuestion(String question) {
-        List<SegItem> segResult = segPos.segment(question);
-        return GetAnswer(segResult);
+        Pair<String, Boolean> processResult = preProcessQuestion(question);
+        String postQuestion = processResult.getKey();
+        boolean isMoreThanOne = processResult.getValue();
+        if (postQuestion.isEmpty())
+            return "请输入有效的问题";
+        List<SegItem> segResult = segPos.segment(postQuestion);
+        return GetAnswer(segResult, isMoreThanOne);
     }
 
-    private String GetAnswer(List<SegItem> segItems) {
+    private String GetAnswer(List<SegItem> segItems, boolean isMoreThanOne) {
+        String answerPrefix = StringUtils.EMPTY;
         String answer = StringUtils.EMPTY;
+        if (isMoreThanOne) {
+            answerPrefix = "识别到了多个问题，现在只回答第一个/n";
+        }
         if (segItems.isEmpty()) {
             answer = "好像不能理解这个问题。。。";
         }
@@ -73,16 +82,28 @@ public class AnswerService {
             }
             answer = answer.substring(0, answer.length() - 2);
         }
-        return answer;
+        return answerPrefix + answer;
     }
 
     /**
      * remove unnecessary punctuations and remain only the first question
      * @param question
-     * @return if there are more than one questions in this string, then return true
+     * @return left: (first) question after processing, right: if more than one question exists
      */
     private Pair<String, Boolean> preProcessQuestion(String question) {
-
+        question = question.replaceAll("[a-zA-Z·`~@#$%^&*+=￥…|<>{}/\\\\\\[\\]]", "");
+        String[] subQuestions = question.split("[。？！.?!]");
+        String res = "";
+        boolean existAnother = false;
+        for (int i = 0; i < subQuestions.length; i++) {
+            if (subQuestions[i].length()>1) {
+                if (res.isEmpty())
+                    res = subQuestions[i];
+                else
+                    existAnother = true;
+            }
+        }
+        return new Pair<>(res, existAnother);
     }
 
 //    private String getCurrentRootDir() {

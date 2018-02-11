@@ -22,7 +22,21 @@ public class PersonIntroduction implements Templates {
                         new SegItem("[是为]", THULACCate.VERB.getValue()),
                         new SegItem(".*", THULACCate.PRONOUN.getValue())
                 ));
+                // 动词/人名 e.g. 介绍下刘备
+                add(Arrays.asList(
+                        new SegItem("(介绍|说|讲)", THULACCate.ANY.getValue()),
+                        new SegItem(".*", THULACCate.PERSON.getValue())
+                ));
                 // 人名/代词
+                add(Arrays.asList(
+                        new SegItem(".*", THULACCate.PERSON.getValue()),
+                        new SegItem(".*", THULACCate.PRONOUN.getValue())
+                ));
+                // 人名/名词 e.g. 刘备简介
+                add(Arrays.asList(
+                        new SegItem(".*", THULACCate.PERSON.getValue()),
+                        new SegItem("(简介|介绍|履历|生平)", THULACCate.ANY.getValue())
+                ));
             }
         };
 
@@ -32,13 +46,21 @@ public class PersonIntroduction implements Templates {
             {
                 add(1);
                 add(3);
+                add(3);
+                add(1);
+                add(3);
             }
         };
 
+        //the error limits for each template
+        // matching errors more than the limitations will be regarded as a failure matching, -1 means no limitation
         private final static List<Integer> errorLimits = new ArrayList<Integer>() {
             {
                 add(0);
                 add(2);
+                add(2);
+                add(1);
+                add(0);
             }
         };
 

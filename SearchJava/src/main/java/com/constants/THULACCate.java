@@ -30,7 +30,8 @@ public enum THULACCate {
     SOUND("o"),//拟声词
     MORPHEME("g"),//语素
     COMMA("w"),//标点
-    OTHER("x");//其它
+    OTHER("x"),
+    ANY("*");//其它
 
     @Getter
     private String value;

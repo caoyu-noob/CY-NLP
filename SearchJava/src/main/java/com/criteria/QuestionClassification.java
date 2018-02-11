@@ -152,7 +152,7 @@ public class QuestionClassification {
 
     //determine if the current question is for the introduction of a person
     public boolean isForPersonIntroduction(List<SegItem> segItems) {
-        boolean a = TemplateMatcher.Match(segItems, personIntroduction, 2);
+        boolean a = TemplateMatcher.Match(segItems, personIntroduction);
         return a;
     }
 }
