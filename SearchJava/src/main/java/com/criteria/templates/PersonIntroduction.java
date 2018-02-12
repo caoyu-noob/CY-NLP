@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import lombok.Getter;
+
 import com.constants.THULACCate;
 
 import io.github.yizhiru.thulac4j.model.SegItem;

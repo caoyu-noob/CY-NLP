@@ -3,7 +3,7 @@ package com.constants;
 import lombok.Getter;
 
 public enum THULACCate {
-    NNOUN("n"),//名词
+    NOUN("n"),//名词
     PERSON("np"),//人名
     PLACE("ns"),//地名
     ORG("ni"),//机构名
