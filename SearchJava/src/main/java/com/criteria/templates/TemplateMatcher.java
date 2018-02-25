@@ -1,5 +1,6 @@
 package com.criteria.templates;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -21,10 +22,40 @@ public class TemplateMatcher {
         List<Integer> matchMode = templates.getMatchMode();
         List<Integer> errorLimits = templates.getErrorLimits();
         for (int i = 0; i < templatesList.size(); i++) {
-            if (matchWordProperty(segItems, templatesList.get(i), matchMode.get(i), errorLimits.get(i)))
+            if (matchWordAndProperty(segItems, templatesList.get(i), matchMode.get(i), errorLimits.get(i)))
                 return true;
         }
         return false;
+    }
+
+    /**
+     * find the start and end position of the a given slot in a segmented items, if no matched slot found, return -1
+     * In order to find the matched result, it will try to match the template in each position
+     * @param segItems
+     * @param templates
+     * @return
+     */
+    public static List<Integer> MatchEvent(List<SegItem> segItems, Templates.templates templates) {
+        List<Integer> res = new ArrayList<>();
+        int index = 0;
+        List<List<SegItem>> templatesList = templates.getTemplate();
+        List<Integer> matchMode = templates.getMatchMode();
+        List<Integer> errorLimits = templates.getErrorLimits();
+        while(index < segItems.size()) {
+            for (int i = 0; i < templatesList.size(); i++) {
+                if (segItems.size() - index < templatesList.get(i).size())
+                    continue;
+                List<SegItem> currentSegItems = segItems.subList(index, index + templatesList.get(i).size());
+                if (matchWordAndProperty(currentSegItems, templatesList.get(i), matchMode.get(i), errorLimits.get(i))) {
+                    res.add(index);
+                    res.add(index + templatesList.get(i).size());
+                    index += templatesList.get(i).size() - 1;
+                    break;
+                }
+            }
+            index++;
+        }
+        return res;
     }
 
     /**
@@ -35,7 +66,7 @@ public class TemplateMatcher {
      * @param errorLimit
      * @return
      */
-    private static boolean matchWordProperty(List<SegItem> target, List<SegItem> template, int mode, int errorLimit) {
+    private static boolean matchWordAndProperty(List<SegItem> target, List<SegItem> template, int mode, int errorLimit) {
         boolean isRegex = (mode & 2) != 0;
         boolean isProperty = (mode & 1) != 0;
         if (template.size() > target.size() || target.size() - template.size() > errorLimit) {

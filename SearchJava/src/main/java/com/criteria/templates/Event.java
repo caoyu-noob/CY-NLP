@@ -67,6 +67,11 @@ public class Event implements Templates {
                     new SegItem(".*", THULACCate.ANY.getValue()),
                     new SegItem("事件", THULACCate.ANY.getValue())
                 ));
+                add(Arrays.asList(
+                    new SegItem("赤壁", THULACCate.ANY.getValue()),
+                    new SegItem("之", THULACCate.ANY.getValue()),
+                    new SegItem("战", THULACCate.ANY.getValue())
+                ));
             }
         };
 
@@ -83,6 +88,7 @@ public class Event implements Templates {
                 add(3);
                 add(3);
                 add(2);
+                add(2);
             }
         };
 
@@ -90,6 +96,7 @@ public class Event implements Templates {
         // matching errors more than the limitations will be regarded as a failure matching, -1 means no limitation
         private final static List<Integer> errorLimits = new ArrayList<Integer>() {
             {
+                add(0);
                 add(0);
                 add(0);
                 add(0);

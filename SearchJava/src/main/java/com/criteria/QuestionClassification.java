@@ -6,10 +6,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.constants.THULACCate;
+import com.criteria.templates.Event;
+import com.criteria.templates.EventIntroduction;
 import com.criteria.templates.PersonIntroduction;
 import com.criteria.templates.TemplateMatcher;
 
 import io.github.yizhiru.thulac4j.model.SegItem;
+import org.apache.jena.query.QuerySolution;
+import org.springframework.util.CollectionUtils;
 
 /**
  * Created by cao_y on 2018/1/24.
@@ -17,7 +22,9 @@ import io.github.yizhiru.thulac4j.model.SegItem;
  */
 public class QuestionClassification {
 
-    private PersonIntroduction.templates personIntroduction = new PersonIntroduction.templates();
+    private final PersonIntroduction.templates personIntroduction = new PersonIntroduction.templates();
+    private final Event.templates event = new Event.templates();
+    private final EventIntroduction.templates eventIntroduction = new EventIntroduction.templates();
 
     public enum QuestionType {
         // the subject of the question is location, e.g. XX战役在哪发生的, XX是哪里人
@@ -28,8 +35,10 @@ public class QuestionClassification {
         WHO,
         // the subject of the question is event, e.g. XX参加了什么事件
         WHAT,
-        // the subject is introduction, e.g. XX是谁，介绍下XX事件 （该问题回答方式会将实体的所有相关属性一一列出）
-        INRODUCTION,
+        // the subject is person introduction, e.g. XX是谁（该问题回答方式会将实体的所有相关属性一一列出）
+        PERSON_INRODUCTION,
+        // the subject is event introduction, e.g. 介绍下XX事件 （该问题回答方式会将实体的所有相关属性一一列出）
+        EVENT_INTRODUCTION,
         // the subject is some other property, e.g. XX事件的影响， XX的官职
         OTHER,
         // cannot understand the question at the first stage
@@ -97,6 +106,13 @@ public class QuestionClassification {
 
     //Determine the question type at the first stage
     public QuestionType classifyQuestion(List<SegItem> segItems) {
+        if (isForPersonIntroduction(segItems)) {
+            return QuestionType.PERSON_INRODUCTION;
+        }
+        replaceEventSegItem(segItems);
+        if (isForEventIntroduction(segItems)) {
+            return QuestionType.EVENT_INTRODUCTION;
+        }
         Set<SegItem> segItemsSet = new HashSet<>();
         segItemsSet.addAll(segItems);
         Map<Integer, SegItem> posSegItemMap = toPosSegItemMap(segItems);
@@ -152,7 +168,33 @@ public class QuestionClassification {
 
     //determine if the current question is for the introduction of a person
     public boolean isForPersonIntroduction(List<SegItem> segItems) {
-        boolean a = TemplateMatcher.Match(segItems, personIntroduction);
-        return a;
+        return TemplateMatcher.Match(segItems, personIntroduction);
+    }
+
+    //determine if the current question is for the introduction of a Sanguo event
+    public boolean isForEventIntroduction(List<SegItem> segItems) {
+        return TemplateMatcher.Match(segItems, eventIntroduction);
+    }
+
+    //replace the original segItems which is a event word with a new single segItem
+    //no replacement will happen if there is no event word in segItems
+    //e.g. 赤壁(地名)/之(介词)/战(动词) will become 赤壁之战(三国事件)
+    private void replaceEventSegItem(List<SegItem> segItems) {
+        List<Integer> eventStartAndEndIndex = TemplateMatcher.MatchEvent(segItems, event);
+        if (!CollectionUtils.isEmpty(eventStartAndEndIndex)) {
+            int removeCnt = 0;
+            for (int i = 0; i < eventStartAndEndIndex.size(); i+=2) {
+                int start = eventStartAndEndIndex.get(i) - removeCnt;
+                int end = eventStartAndEndIndex.get(i+1) - removeCnt;
+                String eventName = "";
+                for (int j = start; j < end; j++) {
+                    eventName += segItems.get(start).word;
+                    segItems.remove(start);
+                    removeCnt++;
+                }
+                segItems.add(start, new SegItem(eventName, THULACCate.SANGUO_EVENT.getValue()));
+                removeCnt--;
+            }
+        }
     }
 }

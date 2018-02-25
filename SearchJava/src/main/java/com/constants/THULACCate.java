@@ -31,6 +31,7 @@ public enum THULACCate {
     MORPHEME("g"),//语素
     COMMA("w"),//标点
     OTHER("x"),
+    SANGUO_EVENT("sg"),//三国志的事件
     ANY("*");//其它
 
     @Getter
