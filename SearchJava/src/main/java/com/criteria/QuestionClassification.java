@@ -176,6 +176,10 @@ public class QuestionClassification {
         return TemplateMatcher.Match(segItems, eventIntroduction);
     }
 
+    public boolean isForWhereQuestion(List<SegItem> segItems) {
+
+    }
+
     //replace the original segItems which is a event word with a new single segItem
     //no replacement will happen if there is no event word in segItems
     //e.g. 赤壁(地名)/之(介词)/战(动词) will become 赤壁之战(三国事件)

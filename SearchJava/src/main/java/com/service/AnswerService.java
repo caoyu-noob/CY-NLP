@@ -74,7 +74,7 @@ public class AnswerService {
         List<String> result = searchService.findGivenPropertyContainGivenName(searchParameter.getTargetModel(), searchParameter.getSubject(),
                 searchParameter.getProperty());
         if (CollectionUtils.isEmpty(result)) {
-            answer = "知道你在问什么，但真的找不到相关的数据啊。。。";
+            answer = "知道你在问什么，但找不到相关的数据啊。。。";
         } else {
             for (String item : result) {
                 System.out.println(item);
