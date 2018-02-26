@@ -68,8 +68,8 @@ public class AnswerService {
         if (segItems.isEmpty()) {
             answer = "好像不能理解这个问题。。。";
         }
-        System.out.println(questionClassification.isForPersonIntroduction(segItems));
         QuestionType questionType = questionClassification.classifyQuestion(segItems);
+        System.out.println(questionType);
         SearchParameter searchParameter = decideTarget.getTarget(questionType, segItems);
         List<String> result = searchService.findGivenPropertyContainGivenName(searchParameter.getTargetModel(), searchParameter.getSubject(),
                 searchParameter.getProperty());

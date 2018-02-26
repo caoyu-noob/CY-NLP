@@ -22,10 +22,28 @@ public class TemplateMatcher {
         List<Integer> matchMode = templates.getMatchMode();
         List<Integer> errorLimits = templates.getErrorLimits();
         for (int i = 0; i < templatesList.size(); i++) {
-            if (matchWordAndProperty(segItems, templatesList.get(i), matchMode.get(i), errorLimits.get(i)))
+            if (matchWordAndProperty(segItems, templatesList.get(i), matchMode.get(i), errorLimits.get(i)) >= 0)
                 return true;
         }
         return false;
+    }
+
+    /**
+     * return the specific start position of matched result in the segments， -1 means it cannot be matched
+     * @param segItems
+     * @param templates
+     * @return
+     */
+    public static int MatchAndGetPos(List<SegItem> segItems, Templates.templates templates) {
+        List<List<SegItem>> templatesList = templates.getTemplate();
+        List<Integer> matchMode = templates.getMatchMode();
+        List<Integer> errorLimits = templates.getErrorLimits();
+        for (int i = 0; i < templatesList.size(); i++) {
+            int matchedPos = matchWordAndProperty(segItems, templatesList.get(i), matchMode.get(i), errorLimits.get(i));
+            if (matchedPos >= 0)
+                return matchedPos;
+        }
+        return -1;
     }
 
     /**
@@ -66,14 +84,15 @@ public class TemplateMatcher {
      * @param errorLimit
      * @return
      */
-    private static boolean matchWordAndProperty(List<SegItem> target, List<SegItem> template, int mode, int errorLimit) {
+    private static int matchWordAndProperty(List<SegItem> target, List<SegItem> template, int mode, int errorLimit) {
         boolean isRegex = (mode & 2) != 0;
         boolean isProperty = (mode & 1) != 0;
         if (template.size() > target.size() || target.size() - template.size() > errorLimit) {
-            return false;
+            return -1;
         }
         int targetIndex = 0;
         int templateIndex = 0;
+        int firstMatched = -1;
         while (targetIndex < target.size() && templateIndex < template.size()) {
             boolean regexMatched = true;
             boolean propertyMatched =  true;
@@ -87,17 +106,20 @@ public class TemplateMatcher {
                     propertyMatched = target.get(targetIndex).pos.equals(template.get(templateIndex).pos);
             }
             if (regexMatched && propertyMatched) {
+                if (firstMatched == -1)
+                    firstMatched = targetIndex;
                 targetIndex++;
                 templateIndex++;
+
             } else {
                 targetIndex++;
                 if (errorLimit >= 0 && (targetIndex - templateIndex) > errorLimit)
-                    return false;
+                    return -1;
             }
         }
         if (templateIndex == template.size())
-            return true;
+            return firstMatched;
         else
-            return false;
+            return -1;
     }
 }
