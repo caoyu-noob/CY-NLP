@@ -64,7 +64,7 @@ public class TemplateMatcher {
                 if (segItems.size() - index < templatesList.get(i).size())
                     continue;
                 List<SegItem> currentSegItems = segItems.subList(index, index + templatesList.get(i).size());
-                if (matchWordAndProperty(currentSegItems, templatesList.get(i), matchMode.get(i), errorLimits.get(i))) {
+                if (matchWordAndProperty(currentSegItems, templatesList.get(i), matchMode.get(i), errorLimits.get(i)) >= 0) {
                     res.add(index);
                     res.add(index + templatesList.get(i).size());
                     index += templatesList.get(i).size() - 1;
@@ -87,39 +87,40 @@ public class TemplateMatcher {
     private static int matchWordAndProperty(List<SegItem> target, List<SegItem> template, int mode, int errorLimit) {
         boolean isRegex = (mode & 2) != 0;
         boolean isProperty = (mode & 1) != 0;
-        if (template.size() > target.size() || target.size() - template.size() > errorLimit) {
+        if (template.size() > target.size()) {
             return -1;
         }
         int targetIndex = 0;
-        int templateIndex = 0;
-        int firstMatched = -1;
-        while (targetIndex < target.size() && templateIndex < template.size()) {
-            boolean regexMatched = true;
-            boolean propertyMatched =  true;
-            if (isRegex) {
-                regexMatched = Pattern.matches(template.get(templateIndex).word, target.get(targetIndex).word);
+        while (targetIndex < target.size() && target.size() - targetIndex >= template.size()) {
+            int templateIndex = 0;
+            int currentTargetIndex = targetIndex;
+            while (currentTargetIndex < target.size() && target.size() - currentTargetIndex >= (template.size() - targetIndex)
+                    && templateIndex < template.size()) {
+                boolean regexMatched = true;
+                boolean propertyMatched =  true;
+                if (isRegex) {
+                    regexMatched = Pattern.matches(template.get(templateIndex).word, target.get(currentTargetIndex).word);
+                }
+                if (isProperty) {
+                    if (template.get(templateIndex).pos == "*")
+                        propertyMatched = true;
+                    else
+                        propertyMatched = target.get(currentTargetIndex).pos.equals(template.get(templateIndex).pos);
+                }
+                if (regexMatched && propertyMatched) {
+                    currentTargetIndex++;
+                    templateIndex++;
+                } else {
+                    currentTargetIndex++;
+                    if (errorLimit >= 0 && (currentTargetIndex - templateIndex) > errorLimit)
+                        break;
+                }
             }
-            if (isProperty) {
-                if (template.get(templateIndex).pos == "*")
-                    propertyMatched = true;
-                else
-                    propertyMatched = target.get(targetIndex).pos.equals(template.get(templateIndex).pos);
+            if (templateIndex >= template.size()) {
+                return targetIndex;
             }
-            if (regexMatched && propertyMatched) {
-                if (firstMatched == -1)
-                    firstMatched = targetIndex;
-                targetIndex++;
-                templateIndex++;
-
-            } else {
-                targetIndex++;
-                if (errorLimit >= 0 && (targetIndex - templateIndex) > errorLimit)
-                    return -1;
-            }
+            targetIndex++;
         }
-        if (templateIndex == template.size())
-            return firstMatched;
-        else
-            return -1;
+        return -1;
     }
 }

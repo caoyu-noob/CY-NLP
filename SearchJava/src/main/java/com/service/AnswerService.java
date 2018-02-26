@@ -2,6 +2,8 @@ package com.service;
 
 import java.io.File;
 import java.io.IOException;
+
+import com.entity.GetAnswerEntity;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -10,7 +12,6 @@ import java.util.List;
 import com.constants.ModelConstant;
 import com.criteria.DecideTarget;
 import com.criteria.QuestionClassification;
-import com.criteria.QuestionClassification.QuestionType;
 import com.criteria.SearchParameter;
 import javafx.util.Pair;
 
@@ -68,20 +69,20 @@ public class AnswerService {
         if (segItems.isEmpty()) {
             answer = "好像不能理解这个问题。。。";
         }
-        QuestionType questionType = questionClassification.classifyQuestion(segItems);
-        System.out.println(questionType);
-        SearchParameter searchParameter = decideTarget.getTarget(questionType, segItems);
-        List<String> result = searchService.findGivenPropertyContainGivenName(searchParameter.getTargetModel(), searchParameter.getSubject(),
-                searchParameter.getProperty());
-        if (CollectionUtils.isEmpty(result)) {
-            answer = "知道你在问什么，但找不到相关的数据啊。。。";
-        } else {
-            for (String item : result) {
-                System.out.println(item);
-                answer = answer + item + ", ";
-            }
-            answer = answer.substring(0, answer.length() - 2);
-        }
+        GetAnswerEntity getAnswerEntity = questionClassification.classifyQuestion(segItems);
+        System.out.println(getAnswerEntity.getQuestionType());
+//        SearchParameter searchParameter = decideTarget.getTarget(questionType, segItems);
+//        List<String> result = searchService.findGivenPropertyContainGivenName(searchParameter.getTargetModel(), searchParameter.getSubject(),
+//                searchParameter.getProperty());
+//        if (CollectionUtils.isEmpty(result)) {
+//            answer = "知道你在问什么，但找不到相关的数据啊。。。";
+//        } else {
+//            for (String item : result) {
+//                System.out.println(item);
+//                answer = answer + item + ", ";
+//            }
+//            answer = answer.substring(0, answer.length() - 2);
+//        }
         return answerPrefix + answer;
     }
 

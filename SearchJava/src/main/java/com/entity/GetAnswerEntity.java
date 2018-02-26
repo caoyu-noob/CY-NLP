@@ -17,11 +17,11 @@ import com.constants.THULACCate;
 @AllArgsConstructor
 public class GetAnswerEntity {
     private QuestionType questionType;
-    private THULACCate property;
+    private String type;
     private List<String> subjects = null;
     private List<String> objects = null;
 
     public static GetAnswerEntity getUnkownEntity() {
-        return new GetAnswerEntity(QuestionType.UNKNOW, THULACCate.ANY, null, null);
+        return new GetAnswerEntity(QuestionType.UNKNOW, THULACCate.ANY.getValue(), null, null);
     }
 }

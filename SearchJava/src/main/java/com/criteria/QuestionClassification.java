@@ -1,19 +1,10 @@
 package com.criteria;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.constants.THULACCate;
-import com.criteria.templates.Event;
-import com.criteria.templates.EventIntroduction;
-import com.criteria.templates.PersonIntroduction;
-import com.criteria.templates.TemplateMatcher;
-import com.criteria.templates.Where;
+import com.criteria.templates.*;
 import com.entity.GetAnswerEntity;
 import com.entity.QuestionType;
 
@@ -31,20 +22,26 @@ public class QuestionClassification {
     private final Event.templates event = new Event.templates();
     private final EventIntroduction.templates eventIntroduction = new EventIntroduction.templates();
     private final Where.templates where = new Where.templates();
+    private final WhereCheck.templates whereCheck = new WhereCheck.templates();
 
     //Determine the question type at the first stage
     public GetAnswerEntity classifyQuestion(List<SegItem> segItems) {
         if (isForPersonIntroduction(segItems)) {
             List<String> personNames = findWordsForGivenProperty(segItems, THULACCate.PERSON);
-            return new GetAnswerEntity(QuestionType.PERSON_INTRODUCTION, THULACCate.PERSON, personNames, null);
+            return new GetAnswerEntity(QuestionType.PERSON_INTRODUCTION, THULACCate.PERSON.getValue(), personNames, null);
         }
         replaceEventSegItem(segItems);
         if (isForEventIntroduction(segItems)) {
             List<String> eventNames = findWordsForGivenProperty(segItems, THULACCate.SANGUO_EVENT);
-            return new GetAnswerEntity(QuestionType.EVENT_INTRODUCTION, THULACCate.PERSON, eventNames, null);
+            return new GetAnswerEntity(QuestionType.EVENT_INTRODUCTION, THULACCate.PERSON.getValue(), eventNames, null);
         }
-        if (isForWhereQuestion(segItems)) {
-            return QuestionType.WHERE;
+        int wherePos = getPosForWhereQuestion(segItems);
+        if (wherePos >= 0) {
+            SegItem targetItem = chechValidityOfWhereQuestion(segItems);
+            if (targetItem != null) {
+                return new GetAnswerEntity(QuestionType.WHERE, targetItem.pos, Arrays.asList(targetItem.word), null);
+            }
+            return GetAnswerEntity.getUnkownEntity();
         }
         Set<SegItem> segItemsSet = new HashSet<>();
         segItemsSet.addAll(segItems);
@@ -110,8 +107,15 @@ public class QuestionClassification {
         return TemplateMatcher.Match(segItems, eventIntroduction);
     }
 
-    public boolean isForWhereQuestion(List<SegItem> segItems) {
-        return TemplateMatcher.Match(segItems, where);
+    public int getPosForWhereQuestion(List<SegItem> segItems) {
+        return TemplateMatcher.MatchAndGetPos(segItems, where);
+    }
+
+    private SegItem chechValidityOfWhereQuestion(List<SegItem> segItems) {
+        if (!TemplateMatcher.Match(segItems, whereCheck)) {
+            return WhereCheck.checkTargetType(segItems);
+        }
+        return null;
     }
 
     //replace the original segItems which is a event word with a new single segItem

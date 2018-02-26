@@ -7,7 +7,7 @@ import java.util.Map;
 
 import com.constants.SearchConstant;
 import com.constants.SearchConstant.TargetModel;
-import com.criteria.QuestionClassification.QuestionType;
+import com.entity.QuestionType;
 
 import io.github.yizhiru.thulac4j.model.SegItem;
 
