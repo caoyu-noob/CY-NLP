@@ -18,23 +18,28 @@ import org.springframework.util.CollectionUtils;
  */
 public class QuestionClassification {
 
-    private final PersonIntroduction.templates personIntroduction = new PersonIntroduction.templates();
-    private final Event.templates event = new Event.templates();
-    private final EventIntroduction.templates eventIntroduction = new EventIntroduction.templates();
-    private final Where.templates where = new Where.templates();
-    private final WhereCheck.templates whereCheck = new WhereCheck.templates();
+    private static final PersonIntroduction.templates personIntroduction = new PersonIntroduction.templates();
+    private static final Event.templates event = new Event.templates();
+    private static final EventIntroduction.templates eventIntroduction = new EventIntroduction.templates();
+    private static final Where.templates where = new Where.templates();
+    private static final WhereCheck.templates whereCheck = new WhereCheck.templates();
+    private static final When.templates when = new When.templates();
+    private static final WhenCheck.templates whenCheck = new WhenCheck.templates();
+
 
     //Determine the question type at the first stage
     public GetAnswerEntity classifyQuestion(List<SegItem> segItems) {
-        if (isForPersonIntroduction(segItems)) {
-            List<String> personNames = findWordsForGivenProperty(segItems, THULACCate.PERSON);
-            return new GetAnswerEntity(QuestionType.PERSON_INTRODUCTION, THULACCate.PERSON.getValue(), personNames, null);
-        }
         replaceEventSegItem(segItems);
-        if (isForEventIntroduction(segItems)) {
-            List<String> eventNames = findWordsForGivenProperty(segItems, THULACCate.SANGUO_EVENT);
-            return new GetAnswerEntity(QuestionType.EVENT_INTRODUCTION, THULACCate.PERSON.getValue(), eventNames, null);
+        //determine if question is for where
+        int whenPos = getPosForWhenQuestion(segItems);
+        if (whenPos >= 0) {
+            SegItem targetItem = checkValidityOfWhenQuestion(segItems);
+            if (targetItem != null) {
+                return new GetAnswerEntity(QuestionType.WHEN, targetItem.pos, Arrays.asList(targetItem.word), null);
+            }
+            return GetAnswerEntity.getUnkownEntity();
         }
+        //determine if question is for where
         int wherePos = getPosForWhereQuestion(segItems);
         if (wherePos >= 0) {
             SegItem targetItem = chechValidityOfWhereQuestion(segItems);
@@ -42,6 +47,16 @@ public class QuestionClassification {
                 return new GetAnswerEntity(QuestionType.WHERE, targetItem.pos, Arrays.asList(targetItem.word), null);
             }
             return GetAnswerEntity.getUnkownEntity();
+        }
+        //determine if question is for person introduction
+        if (isForPersonIntroduction(segItems)) {
+            List<String> personNames = findWordsForGivenProperty(segItems, THULACCate.PERSON);
+            return new GetAnswerEntity(QuestionType.PERSON_INTRODUCTION, THULACCate.PERSON.getValue(), personNames, null);
+        }
+        //determine if question is for event introduction
+        if (isForEventIntroduction(segItems)) {
+            List<String> eventNames = findWordsForGivenProperty(segItems, THULACCate.SANGUO_EVENT);
+            return new GetAnswerEntity(QuestionType.EVENT_INTRODUCTION, THULACCate.PERSON.getValue(), eventNames, null);
         }
         Set<SegItem> segItemsSet = new HashSet<>();
         segItemsSet.addAll(segItems);
@@ -98,22 +113,33 @@ public class QuestionClassification {
     }
 
     //determine if the current question is for the introduction of a person
-    public boolean isForPersonIntroduction(List<SegItem> segItems) {
-        return TemplateMatcher.Match(segItems, personIntroduction);
+    private boolean isForPersonIntroduction(List<SegItem> segItems) {
+        return TemplateMatcher.Match(segItems, personIntroduction, true);
     }
 
     //determine if the current question is for the introduction of a Sanguo event
-    public boolean isForEventIntroduction(List<SegItem> segItems) {
-        return TemplateMatcher.Match(segItems, eventIntroduction);
+    private boolean isForEventIntroduction(List<SegItem> segItems) {
+        return TemplateMatcher.Match(segItems, eventIntroduction, true);
     }
 
-    public int getPosForWhereQuestion(List<SegItem> segItems) {
-        return TemplateMatcher.MatchAndGetPos(segItems, where);
+    private int getPosForWhereQuestion(List<SegItem> segItems) {
+        return TemplateMatcher.MatchAndGetPos(segItems, where, false);
+    }
+
+    private int getPosForWhenQuestion(List<SegItem> segItems) {
+        return TemplateMatcher.MatchAndGetPos(segItems, when, false);
     }
 
     private SegItem chechValidityOfWhereQuestion(List<SegItem> segItems) {
-        if (!TemplateMatcher.Match(segItems, whereCheck)) {
+        if (TemplateMatcher.Match(segItems, whereCheck, false)) {
             return WhereCheck.checkTargetType(segItems);
+        }
+        return null;
+    }
+
+    private SegItem checkValidityOfWhenQuestion(List<SegItem> segItems) {
+        if (TemplateMatcher.Match(segItems, whenCheck, false)) {
+            return WhenCheck.checkTargetType(segItems);
         }
         return null;
     }

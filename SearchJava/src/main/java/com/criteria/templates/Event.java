@@ -38,12 +38,12 @@ public class Event implements Templates {
                 //XX（人名）入XX（地名） e.g. 刘备入益州
                 add(Arrays.asList(
                     new SegItem(".*", THULACCate.PERSON.getValue()),
-                    new SegItem("[进|入|出]", THULACCate.VERB.getValue()),
+                    new SegItem("(进|入|出)", THULACCate.VERB.getValue()),
                     new SegItem(".*", THULACCate.PLACE.getValue())
                 ));
                 //习语
                 add(Arrays.asList(
-                    new SegItem("[单刀赴会|挟天子以令诸侯|三顾茅庐]", THULACCate.CUSTOM.getValue())
+                    new SegItem("(单刀赴会|挟天子以令诸侯|三顾茅庐)", THULACCate.CUSTOM.getValue())
                 ));
                 //XX(人名）之X e.g. 董卓之乱
                 add(Arrays.asList(
@@ -54,13 +54,13 @@ public class Event implements Templates {
                 //XX(人名)X(动词)XX(人名) 曹操征张鲁
                 add(Arrays.asList(
                     new SegItem(".*", THULACCate.PERSON.getValue()),
-                    new SegItem("[征|废|诛|诛杀|杀]", THULACCate.VERB.getValue()),
+                    new SegItem("(征|废|诛|诛杀|杀)", THULACCate.VERB.getValue()),
                     new SegItem(".*", THULACCate.PERSON.getValue())
                 ));
                 //XX（人名）XX（行为） 袁术称帝
                 add(Arrays.asList(
                     new SegItem(".*", THULACCate.PERSON.getValue()),
-                    new SegItem("[称帝|谋反]", THULACCate.ANY.getValue())
+                    new SegItem("(称帝|谋反)", THULACCate.ANY.getValue())
                 ));
                 //XX事件
                 add(Arrays.asList(
@@ -69,6 +69,18 @@ public class Event implements Templates {
                 ));
                 add(Arrays.asList(
                     new SegItem("赤壁", THULACCate.ANY.getValue()),
+                    new SegItem("之", THULACCate.ANY.getValue()),
+                    new SegItem("战", THULACCate.ANY.getValue())
+                ));
+                add(Arrays.asList(
+                    new SegItem("赤", THULACCate.ANY.getValue()),
+                    new SegItem("壁", THULACCate.ANY.getValue()),
+                    new SegItem("之", THULACCate.ANY.getValue()),
+                    new SegItem("战", THULACCate.ANY.getValue())
+                ));
+                add(Arrays.asList(
+                    new SegItem("官", THULACCate.ANY.getValue()),
+                    new SegItem("渡", THULACCate.ANY.getValue()),
                     new SegItem("之", THULACCate.ANY.getValue()),
                     new SegItem("战", THULACCate.ANY.getValue())
                 ));
@@ -89,6 +101,8 @@ public class Event implements Templates {
                 add(3);
                 add(2);
                 add(2);
+                add(2);
+                add(2);
             }
         };
 
@@ -96,6 +110,8 @@ public class Event implements Templates {
         // matching errors more than the limitations will be regarded as a failure matching, -1 means no limitation
         private final static List<Integer> errorLimits = new ArrayList<Integer>() {
             {
+                add(0);
+                add(0);
                 add(0);
                 add(0);
                 add(0);

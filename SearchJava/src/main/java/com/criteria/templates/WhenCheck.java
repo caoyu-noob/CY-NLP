@@ -1,19 +1,19 @@
 package com.criteria.templates;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import com.constants.THULACCate;
 
 import io.github.yizhiru.thulac4j.model.SegItem;
 
 /**
- * Created by cao_y on 2018/2/26.
+ * Created by cao_y on 2018/2/27.
  */
-//a match template to determine if current question is a valid Where question
-//it needs to be used combined with another template Where to finally determine if it's a valid question
-//some questions are invalid such as 刘备(人名)发生在哪？ 赤壁之战(事件名)是哪的人？
-//question matched this template will be regarded as a invalid question
-public class WhereCheck {
+public class WhenCheck {
 
     public static class templates implements Templates.templates {
 
@@ -23,6 +23,10 @@ public class WhereCheck {
                 add(Arrays.asList(
                         new SegItem(".*", THULACCate.PERSON.getValue()),
                         new SegItem("(出生|诞生|是)", THULACCate.VERB.getValue())
+                ));
+                //只有事件名
+                add(Arrays.asList(
+                        new SegItem(".*", THULACCate.SANGUO_EVENT.getValue())
                 ));
                 //contains 事件名+合适的动词
                 add(Arrays.asList(
@@ -39,16 +43,6 @@ public class WhereCheck {
                         new SegItem(".*", THULACCate.SANGUO_EVENT.getValue()),
                         new SegItem("(在)", THULACCate.PREPOSTION.getValue())
                 ));
-                //contains 地名+合适的动词
-                add(Arrays.asList(
-                        new SegItem(".*", THULACCate.PLACE.getValue()),
-                        new SegItem("(是)", THULACCate.VERB.getValue())
-                ));
-                //contains 地名+合适的介词
-                add(Arrays.asList(
-                        new SegItem(".*", THULACCate.PLACE.getValue()),
-                        new SegItem("(在)", THULACCate.PREPOSTION.getValue())
-                ));
             }
         };
 
@@ -57,8 +51,7 @@ public class WhereCheck {
         private final static List<Integer> matchMode = new ArrayList<Integer>() {
             {
                 add(3);
-                add(3);
-                add(3);
+                add(1);
                 add(3);
                 add(3);
                 add(3);
@@ -72,7 +65,6 @@ public class WhereCheck {
                 add(-1);
                 add(-1);
                 add(-1);
-                add(0);
                 add(-1);
                 add(0);
             }
@@ -103,7 +95,6 @@ public class WhereCheck {
         Set<String> targetTypes = new HashSet<String>() {
             {
                 add(THULACCate.PERSON.getValue());
-                add(THULACCate.PLACE.getValue());
                 add(THULACCate.SANGUO_EVENT.getValue());
             }
         };

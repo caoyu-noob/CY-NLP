@@ -59,7 +59,7 @@ public class PersonIntroduction implements Templates {
         private final static List<Integer> errorLimits = new ArrayList<Integer>() {
             {
                 add(0);
-                add(2);
+                add(1);
                 add(2);
                 add(1);
                 add(0);

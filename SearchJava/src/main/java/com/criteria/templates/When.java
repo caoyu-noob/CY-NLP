@@ -1,30 +1,36 @@
 package com.criteria.templates;
 
-import com.constants.THULACCate;
-import io.github.yizhiru.thulac4j.model.SegItem;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-//a match template using pronoun and noun to determine whether the question is querying where
-//it needs to be used combined with another template WhereCheck to finally determine if it's a valid question
-public class Where implements Templates {
+import com.constants.THULACCate;
+
+import io.github.yizhiru.thulac4j.model.SegItem;
+
+/**
+ * Created by cao_y on 2018/2/27.
+ */
+public class When implements Templates {
 
     public static class templates implements Templates.templates {
 
         private final static List<List<SegItem>> template = new ArrayList<List<SegItem>>(){
             {
-                //contains 什么地方/位置
+                //contains 什么时候/年代
                 add(Arrays.asList(
-                    new SegItem("(什么|何|啥|哪些|哪个)", THULACCate.PRONOUN.getValue()),
-                    new SegItem("(方|地点|位置|区域|地方)", THULACCate.NOUN.getValue())
+                        new SegItem("(什么|何|啥|哪些|哪个)", THULACCate.PRONOUN.getValue()),
+                        new SegItem("(时候|时间|年代|年份)", THULACCate.NOUN.getValue())
                 ));
-                //contains 哪里/何处/何地
+                //contains 何时
                 add(Arrays.asList(
-                    new SegItem("(何处|何地|哪里|哪儿|哪|哪人)", THULACCate.PRONOUN.getValue())
+                        new SegItem("(何时)", THULACCate.PRONOUN.getValue())
                 ));
-
+                //contains 哪年/何年
+                add(Arrays.asList(
+                        new SegItem("(何|哪)", THULACCate.PRONOUN.getValue()),
+                        new SegItem("[年]", THULACCate.QUANTITY.getValue())
+                ));
             }
         };
 
@@ -34,6 +40,7 @@ public class Where implements Templates {
             {
                 add(3);
                 add(3);
+                add(3);
             }
         };
 
@@ -41,6 +48,7 @@ public class Where implements Templates {
         // matching errors more than the limitations will be regarded as a failure matching, -1 means no limitation
         private final static List<Integer> errorLimits = new ArrayList<Integer>() {
             {
+                add(0);
                 add(0);
                 add(0);
             }
