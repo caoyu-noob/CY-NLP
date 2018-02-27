@@ -71,6 +71,7 @@ public class AnswerService {
         }
         GetAnswerEntity getAnswerEntity = questionClassification.classifyQuestion(segItems);
         System.out.println(getAnswerEntity.getQuestionType());
+        System.out.println(getAnswerEntity.getSubjects() != null ? getAnswerEntity.getSubjects().get(0) : "");
 //        SearchParameter searchParameter = decideTarget.getTarget(questionType, segItems);
 //        List<String> result = searchService.findGivenPropertyContainGivenName(searchParameter.getTargetModel(), searchParameter.getSubject(),
 //                searchParameter.getProperty());

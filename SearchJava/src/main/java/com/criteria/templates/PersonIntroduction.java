@@ -39,6 +39,11 @@ public class PersonIntroduction implements Templates {
                         new SegItem(".*", THULACCate.PERSON.getValue()),
                         new SegItem("(简介|介绍|履历|生平)", THULACCate.ANY.getValue())
                 ));
+                // 人名/习语 e.g. 刘备何许人也
+                add(Arrays.asList(
+                        new SegItem(".*", THULACCate.PERSON.getValue()),
+                        new SegItem("(何许人也)", THULACCate.CUSTOM.getValue())
+                ));
             }
         };
 
@@ -51,6 +56,7 @@ public class PersonIntroduction implements Templates {
                 add(3);
                 add(1);
                 add(3);
+                add(3);
             }
         };
 
@@ -62,6 +68,7 @@ public class PersonIntroduction implements Templates {
                 add(1);
                 add(2);
                 add(1);
+                add(0);
                 add(0);
             }
         };

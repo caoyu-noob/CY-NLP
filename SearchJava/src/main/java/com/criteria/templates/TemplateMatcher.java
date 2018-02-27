@@ -128,6 +128,7 @@ public class TemplateMatcher {
             boolean isProperty, int errorLimit) {
         int targetIndex = startIndex;
         int templateIndex = 0;
+        int errorCnt = 0;
         while (targetIndex < target.size() && target.size() - targetIndex >= (template.size() - templateIndex)
                 && templateIndex < template.size()) {
             boolean regexMatched = true;
@@ -146,7 +147,8 @@ public class TemplateMatcher {
                 templateIndex++;
             } else {
                 targetIndex++;
-                if (errorLimit >= 0 && (targetIndex - templateIndex) > errorLimit)
+                errorCnt++;
+                if (errorLimit >= 0 && errorCnt > errorLimit)
                     break;
             }
         }

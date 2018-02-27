@@ -1,47 +1,44 @@
 package com.criteria.templates;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import com.constants.THULACCate;
-
 import io.github.yizhiru.thulac4j.model.SegItem;
 
-/**
- * Created by cao_y on 2018/2/27.
- */
-public class WhenCheck {
+import java.util.*;
+
+public class WhoCheck {
 
     public static class templates implements Templates.templates {
 
         private final static List<List<SegItem>> template = new ArrayList<List<SegItem>>(){
             {
-                //contains 人名+合适的动词
-                add(Arrays.asList(
-                        new SegItem(".*", THULACCate.PERSON.getValue()),
-                        new SegItem("(出生|诞生|是)", THULACCate.VERB.getValue())
-                ));
-                //只有事件名
-                add(Arrays.asList(
-                        new SegItem(".*", THULACCate.SANGUO_EVENT.getValue())
-                ));
                 //contains 事件名+合适的动词
                 add(Arrays.asList(
                         new SegItem(".*", THULACCate.SANGUO_EVENT.getValue()),
-                        new SegItem("(发生|进行|爆发|是)", THULACCate.VERB.getValue())
+                        new SegItem("(有|包括|包含|是)", THULACCate.VERB.getValue())
                 ));
                 //contains 合适的动词+事件名
                 add(Arrays.asList(
-                        new SegItem("(发生|进行|爆发)", THULACCate.VERB.getValue()),
+                        new SegItem("(参加|加入|参与|是)", THULACCate.VERB.getValue()),
                         new SegItem(".*", THULACCate.SANGUO_EVENT.getValue())
                 ));
-                //contains 事件名+合适的介词
+                //contains 合适的介词+事件名
                 add(Arrays.asList(
-                        new SegItem(".*", THULACCate.SANGUO_EVENT.getValue()),
-                        new SegItem("(在)", THULACCate.PREPOSTION.getValue())
+                        new SegItem("(在)", THULACCate.PREPOSTION.getValue()),
+                        new SegItem(".*", THULACCate.SANGUO_EVENT.getValue())
+                ));
+                //contains 地名+合适的动词
+                add(Arrays.asList(
+                        new SegItem(".*", THULACCate.PLACE.getValue()),
+                        new SegItem("(有|产生|出生|出)", THULACCate.VERB.getValue())
+                ));
+                //contains 合适的介词+地名
+                add(Arrays.asList(
+                        new SegItem("(在|于)", THULACCate.PREPOSTION.getValue()),
+                        new SegItem(".*", THULACCate.PLACE.getValue())
+                ));
+                add(Arrays.asList(
+                        new SegItem("(出生|诞生|是)", THULACCate.VERB.getValue()),
+                        new SegItem(".*", THULACCate.PLACE.getValue())
                 ));
             }
         };
@@ -51,7 +48,8 @@ public class WhenCheck {
         private final static List<Integer> matchMode = new ArrayList<Integer>() {
             {
                 add(3);
-                add(1);
+                add(3);
+                add(3);
                 add(3);
                 add(3);
                 add(3);
@@ -63,10 +61,11 @@ public class WhenCheck {
         private final static List<Integer> errorLimits = new ArrayList<Integer>() {
             {
                 add(-1);
-                add(-1);
-                add(-1);
-                add(-1);
+                add(2);
+                add(2);
+                add(2);
                 add(0);
+                add(2);
             }
         };
 
@@ -87,14 +86,14 @@ public class WhenCheck {
     }
 
     /**
-     * check if segment results contain the target types for when question, if so return SegItem, else return null
+     * check if segment results contain the target types for who question, if so return SegItem, else return null
      * @param segItems
      * @return
      */
     public static SegItem checkTargetType(List<SegItem> segItems) {
         Set<String> targetTypes = new HashSet<String>() {
             {
-                add(THULACCate.PERSON.getValue());
+                add(THULACCate.PLACE.getValue());
                 add(THULACCate.SANGUO_EVENT.getValue());
             }
         };

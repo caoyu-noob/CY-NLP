@@ -25,7 +25,8 @@ public class QuestionClassification {
     private static final WhereCheck.templates whereCheck = new WhereCheck.templates();
     private static final When.templates when = new When.templates();
     private static final WhenCheck.templates whenCheck = new WhenCheck.templates();
-
+    private static final Who.templates who = new Who.templates();
+    private static final WhoCheck.templates whoCheck = new WhoCheck.templates();
 
     //Determine the question type at the first stage
     public GetAnswerEntity classifyQuestion(List<SegItem> segItems) {
@@ -37,7 +38,6 @@ public class QuestionClassification {
             if (targetItem != null) {
                 return new GetAnswerEntity(QuestionType.WHEN, targetItem.pos, Arrays.asList(targetItem.word), null);
             }
-            return GetAnswerEntity.getUnkownEntity();
         }
         //determine if question is for where
         int wherePos = getPosForWhereQuestion(segItems);
@@ -46,7 +46,14 @@ public class QuestionClassification {
             if (targetItem != null) {
                 return new GetAnswerEntity(QuestionType.WHERE, targetItem.pos, Arrays.asList(targetItem.word), null);
             }
-            return GetAnswerEntity.getUnkownEntity();
+        }
+        //determine if question is for who
+        int whoPos = getPosForWhoQuestion(segItems);
+        if (whoPos >= 0) {
+            SegItem targetItem = checkValidityOfWhoQuestion(segItems);
+            if (targetItem != null) {
+                return new GetAnswerEntity(QuestionType.WHO, targetItem.pos, Arrays.asList(targetItem.word), null);
+            }
         }
         //determine if question is for person introduction
         if (isForPersonIntroduction(segItems)) {
@@ -130,6 +137,10 @@ public class QuestionClassification {
         return TemplateMatcher.MatchAndGetPos(segItems, when, false);
     }
 
+    private int getPosForWhoQuestion(List<SegItem> segItems) {
+        return TemplateMatcher.MatchAndGetPos(segItems, who, false);
+    }
+
     private SegItem chechValidityOfWhereQuestion(List<SegItem> segItems) {
         if (TemplateMatcher.Match(segItems, whereCheck, false)) {
             return WhereCheck.checkTargetType(segItems);
@@ -140,6 +151,13 @@ public class QuestionClassification {
     private SegItem checkValidityOfWhenQuestion(List<SegItem> segItems) {
         if (TemplateMatcher.Match(segItems, whenCheck, false)) {
             return WhenCheck.checkTargetType(segItems);
+        }
+        return null;
+    }
+
+    private SegItem checkValidityOfWhoQuestion(List<SegItem> segItems) {
+        if (TemplateMatcher.Match(segItems, whoCheck, false)) {
+            return WhoCheck.checkTargetType(segItems);
         }
         return null;
     }
