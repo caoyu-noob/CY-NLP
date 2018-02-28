@@ -24,8 +24,8 @@ public class JenaTest {
         //Please run this function when you run it in the first time in you local environment
 //        saveModels();
         //Please run this function when you run it in the first time in you local environment
-        String regex = "[^123]";
-        String t = "4";
+        String regex = "((?!(什么|哪些|哪个)).)*[^何啥]";
+        String t = "李智群";
         System.out.println(Pattern.matches(regex, t));
         AnswerService answerService = new AnswerService(ModelConstant.CONSOLE_MODE);
         while(true) {

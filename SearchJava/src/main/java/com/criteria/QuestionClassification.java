@@ -27,6 +27,8 @@ public class QuestionClassification {
     private static final WhenCheck.templates whenCheck = new WhenCheck.templates();
     private static final Who.templates who = new Who.templates();
     private static final WhoCheck.templates whoCheck = new WhoCheck.templates();
+    private static final What.templates what = new What.templates();
+    private static final WhatCheck.templates whatCheck = new WhatCheck.templates();
 
     //Determine the question type at the first stage
     public GetAnswerEntity classifyQuestion(List<SegItem> segItems) {
@@ -55,6 +57,14 @@ public class QuestionClassification {
                 return new GetAnswerEntity(QuestionType.WHO, targetItem.pos, Arrays.asList(targetItem.word), null);
             }
         }
+        //determine if question is for what
+        int whatPos = getPosForWhatQuestion(segItems);
+        if (whatPos >= 0) {
+            SegItem targetItem = checkValidityOfWhatQuestion(segItems);
+            if (targetItem != null) {
+                return new GetAnswerEntity(QuestionType.WHAT, targetItem.pos, Arrays.asList(targetItem.word), null);
+            }
+        }
         //determine if question is for person introduction
         if (isForPersonIntroduction(segItems)) {
             List<String> personNames = findWordsForGivenProperty(segItems, THULACCate.PERSON);
@@ -67,56 +77,7 @@ public class QuestionClassification {
         }
         Set<SegItem> segItemsSet = new HashSet<>();
         segItemsSet.addAll(segItems);
-        Map<Integer, SegItem> posSegItemMap = toPosSegItemMap(segItems);
-        Map<SegItem, Integer> segItemPosMap = toSegItemPosMap(segItems);
-//        return roughClassify(segItemPosMap, posSegItemMap);
         return GetAnswerEntity.getUnkownEntity();
-    }
-
-//    private QuestionType roughClassify(Map<SegItem, Integer> segItemPosMap, Map<Integer, SegItem> posSegItemMap) {
-//        if (segItemPosMap.containsKey(RoughKeyWord.WHEREKEY2.getSegItem()) ||
-//                segItemPosMap.containsKey(RoughKeyWord.WHEREKEY1.getSegItem())) {
-//            return QuestionType.WHERE;
-//        }
-//        if (segItemPosMap.containsKey(RoughKeyWord.WHOKEY1.getSegItem())) {
-//            return QuestionType.WHO;
-//        }
-//        for (UncertainPron uPron : UncertainPron.values()) {
-//            if (segItemPosMap.containsKey(uPron.getSegItem())) {
-//                if (segItemPosMap.containsKey(CertainNoun.WHEN1.getSegItem()) ||
-//                        segItemPosMap.containsKey(CertainNoun.WHEN2.getSegItem())) {
-//                    return QuestionType.WHEN;
-//                }
-//                if (segItemPosMap.containsKey(CertainNoun.WHERE1.getSegItem()) ||
-//                        segItemPosMap.containsKey(CertainNoun.WHERE2.getSegItem()) ||
-//                        segItemPosMap.containsKey(CertainNoun.WHERE3.getSegItem())) {
-//                    return QuestionType.WHERE;
-//                }
-//                if (segItemPosMap.containsKey(CertainNoun.WHO1.getSegItem()) ||
-//                        segItemPosMap.containsKey(CertainNoun.WHO2.getSegItem()) ||
-//                        segItemPosMap.containsKey(CertainNoun.WHO3.getSegItem()) ||
-//                        segItemPosMap.containsKey(CertainNoun.WHO4.getSegItem())) {
-//                    return QuestionType.WHO;
-//                }
-//            }
-//        }
-//        return QuestionType.UNKNOW;
-//    }
-
-    private Map<Integer, SegItem> toPosSegItemMap(List<SegItem> segItems) {
-        Map<Integer, SegItem> result = new HashMap<>();
-        for (int i = 0; i < segItems.size(); i++) {
-            result.put(i, segItems.get(i));
-        }
-        return result;
-    }
-
-    private Map<SegItem, Integer> toSegItemPosMap(List<SegItem> segItems) {
-        Map<SegItem, Integer> result = new HashMap<>();
-        for (int i = 0; i < segItems.size(); i++) {
-            result.put(segItems.get(i), i);
-        }
-        return result;
     }
 
     //determine if the current question is for the introduction of a person
@@ -141,6 +102,10 @@ public class QuestionClassification {
         return TemplateMatcher.MatchAndGetPos(segItems, who, false);
     }
 
+    private int getPosForWhatQuestion(List<SegItem> segItems) {
+        return TemplateMatcher.MatchAndGetPos(segItems, what, false);
+    }
+
     private SegItem chechValidityOfWhereQuestion(List<SegItem> segItems) {
         if (TemplateMatcher.Match(segItems, whereCheck, false)) {
             return WhereCheck.checkTargetType(segItems);
@@ -158,6 +123,13 @@ public class QuestionClassification {
     private SegItem checkValidityOfWhoQuestion(List<SegItem> segItems) {
         if (TemplateMatcher.Match(segItems, whoCheck, false)) {
             return WhoCheck.checkTargetType(segItems);
+        }
+        return null;
+    }
+
+    private SegItem checkValidityOfWhatQuestion(List<SegItem> segItems) {
+        if (TemplateMatcher.Match(segItems, whatCheck, false)) {
+            return WhatCheck.checkTargetType(segItems);
         }
         return null;
     }

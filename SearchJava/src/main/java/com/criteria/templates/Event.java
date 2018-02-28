@@ -64,7 +64,7 @@ public class Event implements Templates {
                 ));
                 //XX事件
                 add(Arrays.asList(
-                    new SegItem(".*", THULACCate.ANY.getValue()),
+                    new SegItem("((?!(什么|哪些|哪个)).)*[^何啥]", THULACCate.ANY.getValue()),
                     new SegItem("事件", THULACCate.ANY.getValue())
                 ));
                 add(Arrays.asList(
