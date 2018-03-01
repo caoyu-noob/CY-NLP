@@ -22,7 +22,7 @@ public class JenaTest {
 
     public static void main(String[] args) throws IOException{
         //Please run this function when you run it in the first time in you local environment
-//        saveModels();
+        saveModels();
         //Please run this function when you run it in the first time in you local environment
         String regex = "((?!(什么|哪些|哪个)).)*[^何啥]";
         String t = "李智群";

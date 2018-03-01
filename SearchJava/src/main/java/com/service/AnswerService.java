@@ -3,11 +3,14 @@ package com.service;
 import java.io.File;
 import java.io.IOException;
 
+import com.constants.SearchConstant;
 import com.entity.GetAnswerEntity;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
+import java.util.Map;
 
 import com.constants.ModelConstant;
 import com.criteria.DecideTarget;
@@ -17,6 +20,9 @@ import javafx.util.Pair;
 
 import io.github.yizhiru.thulac4j.SegPos;
 import io.github.yizhiru.thulac4j.model.SegItem;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
 
 /**
  * Created by cao_y on 2018/1/24.
@@ -34,6 +40,11 @@ public class AnswerService {
     private final String fileSeparator = System.getProperty("file.separator");
 
     private static SegPos segPos;
+
+    private String INVALID_QUESTION = "请输入有效的问题";
+    private String MULTI_QUESTION = "识别到了多个问题，现在只回答第一个/n";
+    private String UNKNOWN_QUESTION = "好像不能理解这个问题。。。";
+    private String NODATA_QUESTION = "知道你在问什么，但找不到相关的数据啊。。。";
 
     public AnswerService(int applicationMode) throws IOException {
         this.searchService = new SearchService(applicationMode);
@@ -55,7 +66,7 @@ public class AnswerService {
         String postQuestion = processResult.getKey();
         boolean isMoreThanOne = processResult.getValue();
         if (postQuestion.isEmpty())
-            return "请输入有效的问题";
+            return INVALID_QUESTION;
         List<SegItem> segResult = segPos.segment(postQuestion);
         return GetAnswer(segResult, isMoreThanOne);
     }
@@ -64,7 +75,7 @@ public class AnswerService {
         String answerPrefix = StringUtils.EMPTY;
         String answer = StringUtils.EMPTY;
         if (isMoreThanOne) {
-            answerPrefix = "识别到了多个问题，现在只回答第一个/n";
+            answerPrefix = MULTI_QUESTION;
         }
         if (segItems.isEmpty()) {
             answer = "好像不能理解这个问题。。。";
@@ -72,19 +83,7 @@ public class AnswerService {
         GetAnswerEntity getAnswerEntity = questionClassification.classifyQuestion(segItems);
         System.out.println(getAnswerEntity.getQuestionType());
         System.out.println(getAnswerEntity.getSubjects() != null ? getAnswerEntity.getSubjects().get(0) : "");
-//        SearchParameter searchParameter = decideTarget.getTarget(questionType, segItems);
-//        List<String> result = searchService.findGivenPropertyContainGivenName(searchParameter.getTargetModel(), searchParameter.getSubject(),
-//                searchParameter.getProperty());
-//        if (CollectionUtils.isEmpty(result)) {
-//            answer = "知道你在问什么，但找不到相关的数据啊。。。";
-//        } else {
-//            for (String item : result) {
-//                System.out.println(item);
-//                answer = answer + item + ", ";
-//            }
-//            answer = answer.substring(0, answer.length() - 2);
-//        }
-        return answerPrefix + answer;
+        return answerPrefix + getAnswerStringFromGetAnswerEntity(getAnswerEntity);
     }
 
     /**
@@ -108,12 +107,52 @@ public class AnswerService {
         return new Pair<>(res, existAnother);
     }
 
-//    private String getCurrentRootDir() {
-//        File file = new File(this.getClass().getResource("/").getFile());
-//        int i = 4;
-//        while (i-- > 0) {
-//            file = file.getParentFile();
-//        }
-//        return file.getAbsolutePath();
-//    }
+    private String getAnswerStringFromGetAnswerEntity(GetAnswerEntity getAnswerEntity) {
+        String answerString = StringUtils.EMPTY;
+        switch(getAnswerEntity.getQuestionType()){
+            case WHEN:
+                answerString = getWhenAnswerString(getAnswerEntity.getType(), getAnswerEntity.getSubjects());
+                break;
+            case WHAT:
+                answerString = getWhatAnswerString(getAnswerEntity.getType(), getAnswerEntity.getSubjects());
+                break;
+            case PERSON_INTRODUCTION:
+                answerString = getIntroductionAnswerString(getAnswerEntity.getType(), getAnswerEntity.getSubjects());
+                break;
+            case EVENT_INTRODUCTION:
+                answerString = getIntroductionAnswerString(getAnswerEntity.getType(), getAnswerEntity.getSubjects());
+                break;
+            default:
+                answerString = UNKNOWN_QUESTION;
+        }
+        return answerString;
+    }
+
+    private String getWhenAnswerString(String type, List<String> subjects) {
+        return "";
+    }
+
+    private String getWhatAnswerString(String type, List<String> subjects) {
+        return "";
+    }
+
+    private String getIntroductionAnswerString(String type, List<String> subjects) {
+        Map<Object, Object> entityMap =
+                searchService.findEnityByGivenName(SearchConstant.typeStringAndModelMap.get(type), subjects.get(0));
+        String answerString = NODATA_QUESTION;
+        if (MapUtils.isNotEmpty(entityMap)) {
+            for (Map.Entry<Object, Object> entry : entityMap.entrySet()) {
+                String p = StringUtils.EMPTY;
+                if (entry.getValue() instanceof String) {
+                    p = entry.getValue().toString();
+                } else {
+                    Resource resource = (Resource)entry.getValue();
+                    Property property = new
+                    Statement s = resource.getProperty()
+                }
+                answerString = answerString + entry.getKey().toString() + ": " + entry.getValue().toString() + "\n";
+            }
+        }
+        return answerString;
+    }
 }

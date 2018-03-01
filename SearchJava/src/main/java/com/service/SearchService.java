@@ -36,7 +36,7 @@ public class SearchService {
 
     public Map<Object, Object> findEnityByGivenName(TargetModel targetModel, String id) {
         StringBuffer queryString = new StringBuffer();
-        queryString.append(targetModel.getPrefix()).append("select ?s ?p ?o where { ").append(targetModel.getName())
+        queryString.append(targetModel.getPrefix()).append("select ?p ?o where { ").append(targetModel.getName())
                 .append(":").append(id).append("_sanguozhi ?p ?o }");
         ResultSet resultSet = modelDao.queryModel(targetModel.getModelName().get(), queryString.toString());
         Map<Object, Object> result = new HashMap<>();
@@ -49,7 +49,7 @@ public class SearchService {
             if (p.isLiteral()) {
                 key = p.toString();
             } else {
-                key = p.asResource();
+                key = p.asResource().;
             }
             if (o.isLiteral()) {
                 value = o.toString();

@@ -1,5 +1,8 @@
 package com.constants;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by cao_y on 2018/1/22.
  */
@@ -70,4 +73,12 @@ public class SearchConstant {
             }
         }
     }
+
+    public static final Map<String, TargetModel> typeStringAndModelMap = new HashMap<String, TargetModel>() {
+        {
+            put(THULACCate.PERSON.getValue(), TargetModel.FIGURE);
+            put(THULACCate.PLACE.getValue(), TargetModel.LOCATION);
+            put(THULACCate.SANGUO_EVENT.getValue(), TargetModel.EVENT);
+        }
+    };
 }
