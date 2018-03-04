@@ -36,6 +36,7 @@ public class JenaTest {
         AnswerService answerService = new AnswerService(ModelConstant.CONSOLE_MODE);
         while(true) {
             Scanner sc = new Scanner(System.in);
+            sc.useDelimiter("\n");
             System.out.println("-----------");
             System.out.println("请输入问题：");
             String question = sc.next();

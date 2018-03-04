@@ -20,7 +20,7 @@ public class When implements Templates {
                 //contains 什么时候/年代
                 add(Arrays.asList(
                         new SegItem("(什么|何|啥|哪些|哪个|哪)", THULACCate.PRONOUN.getValue()),
-                        new SegItem("(时候|时间|年代|年份|年|日期)", THULACCate.NOUN.getValue())
+                        new SegItem("(时候|时间|年代|年份|日期)", THULACCate.NOUN.getValue())
                 ));
                 //contains 何时
                 add(Arrays.asList(
@@ -31,7 +31,7 @@ public class When implements Templates {
                         new SegItem("(何|哪)", THULACCate.PRONOUN.getValue()),
                         new SegItem("[年]", THULACCate.QUANTITY.getValue())
                 ));
-                //contains XX时间是什么/是那一年
+                //contains XX时间是什么/是哪一年
                 add(Arrays.asList(
                         new SegItem("(时候|时间|年代|年份|日期|年月)", THULACCate.NOUN.getValue())
                 ));
@@ -55,7 +55,7 @@ public class When implements Templates {
             {
                 add(1);
                 add(0);
-                add(0);
+                add(1);
                 add(0);
             }
         };

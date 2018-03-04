@@ -3,14 +3,14 @@ package com.service;
 import java.io.IOException;
 
 import com.constants.SearchConstant;
+import com.constants.THULACCate;
 import com.entity.GetAnswerEntity;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Objects;
 
 import com.constants.ModelConstant;
 import com.criteria.DecideTarget;
@@ -20,6 +20,7 @@ import javafx.util.Pair;
 import io.github.yizhiru.thulac4j.SegPos;
 import io.github.yizhiru.thulac4j.model.SegItem;
 import org.apache.jena.rdf.model.Resource;
+import org.omg.CORBA.NO_IMPLEMENT;
 
 /**
  * Created by cao_y on 2018/1/24.
@@ -38,10 +39,17 @@ public class AnswerService {
 
     private static SegPos segPos;
 
-    private String INVALID_QUESTION = "请输入有效的问题";
-    private String MULTI_QUESTION = "识别到了多个问题，现在只回答第一个/n";
-    private String UNKNOWN_QUESTION = "好像不能理解这个问题。。。";
-    private String NODATA_QUESTION = "知道你在问什么，但找不到相关的数据啊。。。";
+    private static final String INVALID_QUESTION = "请输入有效的问题";
+    private static final String MULTI_QUESTION = "识别到了多个问题，现在只回答第一个/n";
+    private static final String UNKNOWN_QUESTION = "好像不能理解这个问题。。。";
+    private static final String NODATA_QUESTION = "知道你在问什么，但找不到相关的数据啊。。。";
+
+    private static final Map<String, List<String>> typeAndPredicateMapForWhatQuestion = new HashMap<String, List<String>>(){
+        {
+            put(THULACCate.PERSON.getValue(), Arrays.asList("participatefigure", "figure"));
+            put(THULACCate.PLACE.getValue(), Arrays.asList("where", "location"));
+        }
+    };
 
     public AnswerService(int applicationMode) throws IOException {
         this.searchService = new SearchService(applicationMode);
@@ -89,6 +97,7 @@ public class AnswerService {
      * @return left: (first) question after processing, right: if more than one question exists
      */
     private Pair<String, Boolean> preProcessQuestion(String question) {
+        question = question.replaceAll("\\s+", "");
         question = question.replaceAll("[a-zA-Z·`~@#$%^&*+=￥…|<>{}/\\\\\\[\\]]", "");
         String[] subQuestions = question.split("[。？！.?!]");
         String res = "";
@@ -110,6 +119,12 @@ public class AnswerService {
             case WHEN:
                 answerString = getWhenAnswerString(getAnswerEntity.getType(), getAnswerEntity.getSubjects(),
                         getAnswerEntity.getObjects());
+                break;
+            case WHERE:
+                answerString = getWhereAnswerString(getAnswerEntity.getType(), getAnswerEntity.getSubjects());
+                break;
+            case WHO:
+                answerString = getWhoAnswerString(getAnswerEntity.getType(), getAnswerEntity.getSubjects());
                 break;
             case WHAT:
                 answerString = getWhatAnswerString(getAnswerEntity.getType(), getAnswerEntity.getSubjects());
@@ -160,6 +175,27 @@ public class AnswerService {
     }
 
     private String getWhatAnswerString(String type, List<String> subjects) {
+        String answerString = NODATA_QUESTION;
+        List<String> labels = searchService.findEntitiesByPredicateAndObject(
+                SearchConstant.TargetModel.EVENT,
+                typeAndPredicateMapForWhatQuestion.get(type).get(0),
+                subjects.get(0),
+                typeAndPredicateMapForWhatQuestion.get(type).get(1));
+        if (CollectionUtils.isNotEmpty(labels)) {
+            StringBuilder resultString = new StringBuilder();
+            labels.stream().forEach(label -> {
+                resultString.append(label).append(", ");
+            });
+            return resultString.substring(0, resultString.length() - 2).toString();
+        }
+        return answerString;
+    }
+
+    private String getWhoAnswerString(String type, List<String> subjects) {
+        return "";
+    }
+
+    private String getWhereAnswerString(String type, List<String> subjects) {
         return "";
     }
 

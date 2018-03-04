@@ -147,6 +147,25 @@ public class SearchService {
         return result;
     }
 
+    public List<String> findEntitiesByPredicateAndObject(TargetModel targetModel, String predicate, String object,
+            String objectPrefix) {
+        StringBuilder queryString = new StringBuilder();
+        queryString.append(targetModel.EVENT.getPrefix()).append(targetModel.FIGURE.getPrefix())
+                .append(targetModel.LOCATION.getPrefix()).append(targetModel.TIME.getPrefix()).
+                append("select ?s where {?s ").append(targetModel.getName())
+                .append(":").append(predicate).append(" ").append(objectPrefix).append(":").append(object)
+                .append("_sanguozhi}");
+        ResultSet resultSet = modelDao.queryModel(targetModel.getModelName().get(), queryString.toString());
+        List<Object> resources = new LinkedList<>();
+        while (resultSet.hasNext()) {
+            RDFNode s = resultSet.next().get("s");
+            if (s.isResource()) {
+                resources.add(s.asResource());
+            }
+        }
+        return getLabelsForResources(resources);
+    }
+
     public boolean checkDataAvailable() {
         for(ModelConstant.ModelNames name : ModelConstant.ModelNames.values()) {
             if (!modelDao.testModel(name.get())) {
@@ -250,6 +269,9 @@ public class SearchService {
     }
 
     private List<String> getLabelsForResources(List<Object> resources) {
+        if (CollectionUtils.isEmpty(resources)) {
+            return null;
+        }
         TargetModel targetModel = null;
         String resource = resources.get(0).toString();
         List<String> ids = resources.stream().map(r -> Resource.class.cast(r).toString())

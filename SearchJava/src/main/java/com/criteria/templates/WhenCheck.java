@@ -27,6 +27,10 @@ public class WhenCheck {
                         new SegItem(".*", THULACCate.PERSON.getValue()),
                         new SegItem("(出生|诞生|死亡|逝世|病逝|离世|去世|是)", THULACCate.VERB.getValue())
                 ));
+                add(Arrays.asList(
+                        new SegItem(".*", THULACCate.PERSON.getValue()),
+                        new SegItem("(生)", THULACCate.ADJECTIVE.getValue())
+                ));
                 //只有事件名
                 add(Arrays.asList(
                         new SegItem(".*", THULACCate.SANGUO_EVENT.getValue())
@@ -54,6 +58,7 @@ public class WhenCheck {
         private final static List<Integer> matchMode = new ArrayList<Integer>() {
             {
                 add(3);
+                add(3);
                 add(1);
                 add(3);
                 add(3);
@@ -65,6 +70,7 @@ public class WhenCheck {
         // matching errors more than the limitations will be regarded as a failure matching, -1 means no limitation
         private final static List<Integer> errorLimits = new ArrayList<Integer>() {
             {
+                add(-1);
                 add(-1);
                 add(-1);
                 add(-1);
@@ -114,10 +120,12 @@ public class WhenCheck {
                 Set<String> words = segItems.stream().map(segItem -> segItem.word).collect(Collectors.toSet());
                 if (words.contains("出生") || words.contains("诞生")) {
                     predicate.add("birthday");
-                } else if (words.contains("死亡") || words.contains("去世") || words.contains("病逝") ||
-                        words.contains("离世") || words.contains("逝世")) {
+                }
+                if (words.contains("死亡") || words.contains("去世") || words.contains("病逝") ||
+                        words.contains("离世") || words.contains("逝世") || words.contains("死")) {
                     predicate.add("deadTime");
-                } else {
+                }
+                if (predicate.size() == 0){
                     predicate.add("birthday");
                     predicate.add("deadTime");
                 }
