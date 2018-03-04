@@ -7,6 +7,7 @@ import com.constants.THULACCate;
 import com.criteria.templates.*;
 import com.entity.GetAnswerEntity;
 import com.entity.QuestionType;
+import javafx.util.Pair;
 
 import io.github.yizhiru.thulac4j.model.SegItem;
 import org.apache.jena.query.QuerySolution;
@@ -36,9 +37,10 @@ public class QuestionClassification {
         //determine if question is for where
         int whenPos = getPosForWhenQuestion(segItems);
         if (whenPos >= 0) {
-            SegItem targetItem = checkValidityOfWhenQuestion(segItems);
-            if (targetItem != null) {
-                return new GetAnswerEntity(QuestionType.WHEN, targetItem.pos, Arrays.asList(targetItem.word), null);
+            Pair<SegItem, List<String>> targetPair = checkValidityOfWhenQuestion(segItems);
+            if (targetPair != null) {
+                return new GetAnswerEntity(QuestionType.WHEN, targetPair.getKey().pos,
+                        Arrays.asList(targetPair.getKey().word), targetPair.getValue());
             }
         }
         //determine if question is for where
@@ -73,7 +75,7 @@ public class QuestionClassification {
         //determine if question is for event introduction
         if (isForEventIntroduction(segItems)) {
             List<String> eventNames = findWordsForGivenProperty(segItems, THULACCate.SANGUO_EVENT);
-            return new GetAnswerEntity(QuestionType.EVENT_INTRODUCTION, THULACCate.PERSON.getValue(), eventNames, null);
+            return new GetAnswerEntity(QuestionType.EVENT_INTRODUCTION, THULACCate.SANGUO_EVENT.getValue(), eventNames, null);
         }
         Set<SegItem> segItemsSet = new HashSet<>();
         segItemsSet.addAll(segItems);
@@ -113,7 +115,7 @@ public class QuestionClassification {
         return null;
     }
 
-    private SegItem checkValidityOfWhenQuestion(List<SegItem> segItems) {
+    private Pair<SegItem, List<String>> checkValidityOfWhenQuestion(List<SegItem> segItems) {
         if (TemplateMatcher.Match(segItems, whenCheck, false)) {
             return WhenCheck.checkTargetType(segItems);
         }

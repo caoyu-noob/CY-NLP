@@ -1,28 +1,25 @@
 package com.service;
 
-import java.io.File;
 import java.io.IOException;
 
 import com.constants.SearchConstant;
 import com.entity.GetAnswerEntity;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
 
 import com.constants.ModelConstant;
 import com.criteria.DecideTarget;
 import com.criteria.QuestionClassification;
-import com.criteria.SearchParameter;
 import javafx.util.Pair;
 
 import io.github.yizhiru.thulac4j.SegPos;
 import io.github.yizhiru.thulac4j.model.SegItem;
-import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.Statement;
 
 /**
  * Created by cao_y on 2018/1/24.
@@ -111,7 +108,8 @@ public class AnswerService {
         String answerString = StringUtils.EMPTY;
         switch(getAnswerEntity.getQuestionType()){
             case WHEN:
-                answerString = getWhenAnswerString(getAnswerEntity.getType(), getAnswerEntity.getSubjects());
+                answerString = getWhenAnswerString(getAnswerEntity.getType(), getAnswerEntity.getSubjects(),
+                        getAnswerEntity.getObjects());
                 break;
             case WHAT:
                 answerString = getWhatAnswerString(getAnswerEntity.getType(), getAnswerEntity.getSubjects());
@@ -128,8 +126,37 @@ public class AnswerService {
         return answerString;
     }
 
-    private String getWhenAnswerString(String type, List<String> subjects) {
-        return "";
+    private String getWhenAnswerString(String type, List<String> subjects, List<String> objects) {
+        String answerString = NODATA_QUESTION;
+        Map<String, String> propertyAndValueMap = searchService.findPropertyByGivenEntityId(
+                SearchConstant.typeStringAndModelMap.get(type), subjects.get(0), objects);
+        if (MapUtils.isNotEmpty(propertyAndValueMap)) {
+            String resultString = "";
+            if (objects.size() == 1) {
+                if (Objects.nonNull(propertyAndValueMap.get(objects.get(0))) &&
+                        !propertyAndValueMap.get(objects.get(0)).equals("")) {
+                    resultString = propertyAndValueMap.get(objects.get(0));
+                }
+            } else if (objects.size() == 2) {
+                String date1 = "?";
+                String date2 = "?";
+                if (Objects.nonNull(propertyAndValueMap.get(objects.get(0))) &&
+                        !propertyAndValueMap.get(objects.get(0)).equals("")) {
+                    date1 = propertyAndValueMap.get(objects.get(0));
+                }
+                if (Objects.nonNull(propertyAndValueMap.get(objects.get(1))) &&
+                        !propertyAndValueMap.get(objects.get(1)).equals("")) {
+                    date2 = propertyAndValueMap.get(objects.get(1));
+                }
+                if (!date1.equals("?") || !date2.equals("?")) {
+                    resultString = date1 + " - " + date2;
+                }
+            }
+            if (!resultString.isEmpty()) {
+                answerString = resultString;
+            }
+        }
+        return answerString;
     }
 
     private String getWhatAnswerString(String type, List<String> subjects) {
@@ -137,22 +164,17 @@ public class AnswerService {
     }
 
     private String getIntroductionAnswerString(String type, List<String> subjects) {
-        Map<Object, Object> entityMap =
-                searchService.findEnityByGivenName(SearchConstant.typeStringAndModelMap.get(type), subjects.get(0));
-        String answerString = NODATA_QUESTION;
-        if (MapUtils.isNotEmpty(entityMap)) {
-            for (Map.Entry<Object, Object> entry : entityMap.entrySet()) {
-                String p = StringUtils.EMPTY;
-                if (entry.getValue() instanceof String) {
-                    p = entry.getValue().toString();
-                } else {
-                    Resource resource = (Resource)entry.getValue();
-                    Property property = new
-                    Statement s = resource.getProperty()
-                }
-                answerString = answerString + entry.getKey().toString() + ": " + entry.getValue().toString() + "\n";
+        StringBuilder answerString = new StringBuilder(NODATA_QUESTION);
+        Map<String, String> propertyAndValueMap = searchService.getPropertyMapByEntityId(
+                SearchConstant.typeStringAndModelMap.get(type), subjects.get(0));
+        if (MapUtils.isNotEmpty(propertyAndValueMap)) {
+            answerString = new StringBuilder(subjects.get(0));
+            answerString.append("\n");
+            for (Entry<String, String> entry : propertyAndValueMap.entrySet()) {
+                answerString.append(entry.getKey()).append(" ： ").append(entry.getValue()).append("\n");
             }
+            answerString.substring(0, answerString.length() - 2);
         }
-        return answerString;
+        return answerString.toString();
     }
 }

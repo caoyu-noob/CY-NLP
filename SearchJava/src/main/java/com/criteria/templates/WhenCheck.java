@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.constants.THULACCate;
+import javafx.util.Pair;
 
 import io.github.yizhiru.thulac4j.model.SegItem;
 
@@ -22,7 +25,7 @@ public class WhenCheck {
                 //contains 人名+合适的动词
                 add(Arrays.asList(
                         new SegItem(".*", THULACCate.PERSON.getValue()),
-                        new SegItem("(出生|诞生|是)", THULACCate.VERB.getValue())
+                        new SegItem("(出生|诞生|死亡|逝世|病逝|离世|去世|是)", THULACCate.VERB.getValue())
                 ));
                 //只有事件名
                 add(Arrays.asList(
@@ -91,17 +94,39 @@ public class WhenCheck {
      * @param segItems
      * @return
      */
-    public static SegItem checkTargetType(List<SegItem> segItems) {
+    public static Pair<SegItem, List<String>> checkTargetType(List<SegItem> segItems) {
         Set<String> targetTypes = new HashSet<String>() {
             {
                 add(THULACCate.PERSON.getValue());
                 add(THULACCate.SANGUO_EVENT.getValue());
             }
         };
+        SegItem targetItem = null;
         for (SegItem segItem : segItems) {
             if (targetTypes.contains(segItem.pos)) {
-                return segItem;
+                targetItem = segItem;
+                break;
             }
+        }
+        List<String> predicate = new ArrayList<>();
+        if (Objects.nonNull(targetItem)){
+            if (targetItem.pos.equals(THULACCate.PERSON.getValue())) {
+                Set<String> words = segItems.stream().map(segItem -> segItem.word).collect(Collectors.toSet());
+                if (words.contains("出生") || words.contains("诞生")) {
+                    predicate.add("birthday");
+                } else if (words.contains("死亡") || words.contains("去世") || words.contains("病逝") ||
+                        words.contains("离世") || words.contains("逝世")) {
+                    predicate.add("deadTime");
+                } else {
+                    predicate.add("birthday");
+                    predicate.add("deadTime");
+                }
+            } else {
+                predicate.add("when");
+            }
+        }
+        if (Objects.nonNull(targetItem)) {
+            return new Pair<>(targetItem, predicate);
         }
         return null;
     }

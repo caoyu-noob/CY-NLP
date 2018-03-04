@@ -5,8 +5,12 @@ import com.constants.ModelConstant;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.constants.SearchConstant;
+import com.dao.ModelDao;
 import com.service.AnswerService;
+import com.service.FileAndDatasetNameService;
 import com.service.FileReader;
+import com.service.SearchService;
 
 import java.io.IOException;
 import java.time.ZoneId;
@@ -22,8 +26,10 @@ public class JenaTest {
 
     public static void main(String[] args) throws IOException{
         //Please run this function when you run it in the first time in you local environment
-        saveModels();
+//        saveModels();
         //Please run this function when you run it in the first time in you local environment
+        SearchService searchService = new SearchService(ModelConstant.CONSOLE_MODE);
+        searchService.getPropertyMapByEntityId(SearchConstant.TargetModel.FIGURE, "刘备");
         String regex = "((?!(什么|哪些|哪个)).)*[^何啥]";
         String t = "李智群";
         System.out.println(Pattern.matches(regex, t));
@@ -33,7 +39,7 @@ public class JenaTest {
             System.out.println("-----------");
             System.out.println("请输入问题：");
             String question = sc.next();
-            answerService.AnswerQuestion(question);
+            System.out.println(answerService.AnswerQuestion(question));
             System.out.println("-----------");
         }
 
