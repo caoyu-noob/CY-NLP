@@ -11,6 +11,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.constants.ModelConstant;
 import com.criteria.DecideTarget;
@@ -21,6 +23,7 @@ import io.github.yizhiru.thulac4j.SegPos;
 import io.github.yizhiru.thulac4j.model.SegItem;
 import org.apache.jena.rdf.model.Resource;
 import org.omg.CORBA.NO_IMPLEMENT;
+import org.omg.CORBA.PERSIST_STORE;
 
 /**
  * Created by cao_y on 2018/1/24.
@@ -48,6 +51,14 @@ public class AnswerService {
         {
             put(THULACCate.PERSON.getValue(), Arrays.asList("participatefigure", "figure"));
             put(THULACCate.PLACE.getValue(), Arrays.asList("where", "location"));
+        }
+    };
+
+    private static final Map<String, List<String>> typeAndPredicateMapForWhereQuestion = new HashMap<String, List<String>>() {
+        {
+            put(THULACCate.SANGUO_EVENT.getValue(), Arrays.asList("where", "location"));
+            put(THULACCate.PLACE.getValue(), Arrays.asList("locNameNow", ""));
+            put(THULACCate.PERSON.getValue(), Arrays.asList("nativePlace", ""));
         }
     };
 
@@ -141,27 +152,29 @@ public class AnswerService {
         return answerString;
     }
 
-    private String getWhenAnswerString(String type, List<String> subjects, List<String> objects) {
+    private String getWhenAnswerString(String type, List<String> subjects, List<String> predicates) {
         String answerString = NODATA_QUESTION;
-        Map<String, String> propertyAndValueMap = searchService.findPropertyByGivenEntityId(
-                SearchConstant.typeStringAndModelMap.get(type), subjects.get(0), objects);
+        Map<String, Object> propertyAndValueMap = searchService.findPropertyByGivenEntityId(
+                SearchConstant.typeStringAndModelMap.get(type), subjects.get(0), predicates);
         if (MapUtils.isNotEmpty(propertyAndValueMap)) {
             String resultString = "";
-            if (objects.size() == 1) {
-                if (Objects.nonNull(propertyAndValueMap.get(objects.get(0))) &&
-                        !propertyAndValueMap.get(objects.get(0)).equals("")) {
-                    resultString = propertyAndValueMap.get(objects.get(0));
+            if (predicates.size() == 1) {
+                if (Objects.nonNull(propertyAndValueMap.get(predicates.get(0))) &&
+                        !propertyAndValueMap.get(predicates.get(0)).equals("")) {
+                    resultString = propertyAndValueMap.get(predicates.get(0)) instanceof String ?
+                            propertyAndValueMap.get(predicates.get(0)).toString() :
+                            transferLitToString(List.class.cast(propertyAndValueMap.get(predicates.get(0))), ",");
                 }
-            } else if (objects.size() == 2) {
+            } else if (predicates.size() == 2) {
                 String date1 = "?";
                 String date2 = "?";
-                if (Objects.nonNull(propertyAndValueMap.get(objects.get(0))) &&
-                        !propertyAndValueMap.get(objects.get(0)).equals("")) {
-                    date1 = propertyAndValueMap.get(objects.get(0));
+                if (Objects.nonNull(propertyAndValueMap.get(predicates.get(0))) &&
+                        !propertyAndValueMap.get(predicates.get(0)).equals("")) {
+                    date1 = propertyAndValueMap.get(predicates.get(0)).toString();
                 }
-                if (Objects.nonNull(propertyAndValueMap.get(objects.get(1))) &&
-                        !propertyAndValueMap.get(objects.get(1)).equals("")) {
-                    date2 = propertyAndValueMap.get(objects.get(1));
+                if (Objects.nonNull(propertyAndValueMap.get(predicates.get(1))) &&
+                        !propertyAndValueMap.get(predicates.get(1)).equals("")) {
+                    date2 = propertyAndValueMap.get(predicates.get(1)).toString();
                 }
                 if (!date1.equals("?") || !date2.equals("?")) {
                     resultString = date1 + " - " + date2;
@@ -192,11 +205,54 @@ public class AnswerService {
     }
 
     private String getWhoAnswerString(String type, List<String> subjects) {
-        return "";
+        String answerString = NODATA_QUESTION;
+        if (type.equals(THULACCate.SANGUO_EVENT.getValue())) {
+            Map<String, Object> propertyAndValueMap = searchService.findPropertyByGivenEntityId(
+                    SearchConstant.TargetModel.EVENT, subjects.get(0), Arrays.asList("participatefigure"));
+            if (MapUtils.isNotEmpty(propertyAndValueMap)) {
+                Object result = propertyAndValueMap.get("participatefigure");
+                if (result instanceof String) {
+                    answerString = result.toString();
+                } else if (result instanceof List) {
+                    answerString = transferLitToString(List.class.cast(result), ",");
+                }
+            }
+        } else if (type.equals(THULACCate.PLACE.getValue())) {
+            String regex = "\\\\s三国.*" + subjects.get(0) + ".*人";
+            List<String> labels = searchService.findLabelsByRegexValue(SearchConstant.TargetModel.FIGURE, "biography", regex);
+            answerString = transferLitToString(labels, ",");
+        }
+        return answerString;
     }
 
     private String getWhereAnswerString(String type, List<String> subjects) {
-        return "";
+        String answerString = NODATA_QUESTION;
+        Map<String, Object> propertyAndValueMap = searchService.findPropertyByGivenEntityId(
+                SearchConstant.typeStringAndModelMap.get(type), subjects.get(0),
+                Arrays.asList(typeAndPredicateMapForWhereQuestion.get(type).get(0)));
+        if (MapUtils.isNotEmpty(propertyAndValueMap)) {
+            Object result = propertyAndValueMap.get(typeAndPredicateMapForWhereQuestion.get(type).get(0));
+            if (result instanceof String) {
+                answerString = result.toString();
+            } else if (result instanceof List) {
+                answerString = transferLitToString(List.class.cast(result), ",");
+            }
+        }
+        if (answerString.equals(NODATA_QUESTION) && type.equals(THULACCate.PERSON.getValue())) {
+            propertyAndValueMap = searchService.findPropertyByGivenEntityId(
+                    SearchConstant.TargetModel.FIGURE, subjects.get(0), Arrays.asList("biography"));
+            if (MapUtils.isNotEmpty(propertyAndValueMap)) {
+                String bio = propertyAndValueMap.get("biography").toString();
+                if (StringUtils.isNoneBlank(bio)) {
+                    Pattern regex = Pattern.compile("\\s三国.+人");
+                    Matcher result = regex.matcher(bio);
+                    if (result.find()) {
+                        answerString = result.group().substring(4, result.group().length() - 1);
+                    }
+                }
+            }
+        }
+        return answerString;
     }
 
     private String getIntroductionAnswerString(String type, List<String> subjects) {
@@ -212,5 +268,16 @@ public class AnswerService {
             answerString.substring(0, answerString.length() - 2);
         }
         return answerString.toString();
+    }
+
+    private String transferLitToString(List<String> values, String comma) {
+        if (CollectionUtils.isEmpty(values)) {
+            return NODATA_QUESTION;
+        }
+        StringBuilder resultString = new StringBuilder();
+        for (String value : values) {
+            resultString.append(value).append(comma).append(" ");
+        }
+        return resultString.substring(0, resultString.length() - 2).toString();
     }
 }

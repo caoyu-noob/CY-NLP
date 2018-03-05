@@ -28,11 +28,12 @@ public class JenaTest {
         //Please run this function when you run it in the first time in you local environment
 //        saveModels();
         //Please run this function when you run it in the first time in you local environment
-        SearchService searchService = new SearchService(ModelConstant.CONSOLE_MODE);
-        searchService.getPropertyMapByEntityId(SearchConstant.TargetModel.FIGURE, "刘备");
-        String regex = "((?!(什么|哪些|哪个)).)*[^何啥]";
-        String t = "李智群";
-        System.out.println(Pattern.matches(regex, t));
+        String a = "dsaodao, 三国江苏淮阴人,ds dssdfsd";
+        Pattern regex = Pattern.compile("\\s三国.+人");
+        Matcher result = regex.matcher(a);
+        while (result.find()) {
+            System.out.println(result.group().substring(3, result.group().length() - 2));
+        }
         AnswerService answerService = new AnswerService(ModelConstant.CONSOLE_MODE);
         while(true) {
             Scanner sc = new Scanner(System.in);

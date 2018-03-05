@@ -16,7 +16,7 @@ public class Who implements Templates {
                 //contains 什么人/将领
                 add(Arrays.asList(
                         new SegItem("(什么|何|啥|哪些|哪个)", THULACCate.PRONOUN.getValue()),
-                        new SegItem("(人|人物|将领|参加者|参与者|参与人|参加人)", THULACCate.NOUN.getValue())
+                        new SegItem("(人|人物|将领|参加者|参与者|参与人|参加人|名人)", THULACCate.NOUN.getValue())
                 ));
                 //contains 谁
                 add(Arrays.asList(

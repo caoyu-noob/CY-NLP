@@ -85,7 +85,7 @@ public class SearchService {
         return result;
     }
 
-    public Map<String, String> findPropertyByGivenEntityId(TargetModel targetModel, String id, List<String> properties) {
+    public Map<String, Object> findPropertyByGivenEntityId(TargetModel targetModel, String id, List<String> properties) {
         if (targetModel == null || id == null || CollectionUtils.isEmpty(properties)) {
             return null;
         }
@@ -96,16 +96,14 @@ public class SearchService {
                 .append(valuesString)
                 .append(targetModel.getName()).append(":").append(id).append("_sanguozhi ?p ?o}");
         ResultSet resultSet = modelDao.queryModel(targetModel.getModelName().get(), queryString.toString());
-        Map<String, String> resultMap = new HashMap<>();
+        Map<String, Object> resultMap = new HashMap<>();
         while (resultSet.hasNext()) {
             QuerySolution qs = resultSet.next();
             String completeProperty = qs.get("p").asResource().toString();
             String currentProperty = "";
             for (String property : properties) {
-                if (!resultMap.containsKey(property)) {
-                    if (completeProperty.contains(property)) {
-                        currentProperty = property;
-                    }
+                if (completeProperty.contains(property)) {
+                    currentProperty = property;
                 }
             }
             RDFNode o = qs.get("o");
@@ -119,7 +117,16 @@ public class SearchService {
                 }
             }
             if (!currentProperty.isEmpty()) {
-                resultMap.put(currentProperty, currentValue);
+                if (!resultMap.containsKey(currentProperty)) {
+                    resultMap.put(currentProperty, currentValue);
+                } else {
+                    if (resultMap.get(currentProperty) instanceof String) {
+                        resultMap.put(currentProperty, Arrays.asList(resultMap.get(currentProperty).toString(), currentValue));
+                    } else {
+                        List.class.cast(resultMap.get(currentProperty)).add(currentValue);
+                    }
+                }
+
             }
         }
         return resultMap;
@@ -155,6 +162,22 @@ public class SearchService {
                 append("select ?s where {?s ").append(targetModel.getName())
                 .append(":").append(predicate).append(" ").append(objectPrefix).append(":").append(object)
                 .append("_sanguozhi}");
+        ResultSet resultSet = modelDao.queryModel(targetModel.getModelName().get(), queryString.toString());
+        List<Object> resources = new LinkedList<>();
+        while (resultSet.hasNext()) {
+            RDFNode s = resultSet.next().get("s");
+            if (s.isResource()) {
+                resources.add(s.asResource());
+            }
+        }
+        return getLabelsForResources(resources);
+    }
+
+    public List<String> findLabelsByRegexValue(TargetModel targetModel, String predicate, String regex) {
+        StringBuilder queryString = new StringBuilder();
+        queryString.append(targetModel.getPrefix()).append(SearchConstant.RDFS)
+                .append("select ?s where {?s ").append(targetModel.getName()).append(":").append(predicate)
+                .append(" ?o FILTER regex(str(?o), \"").append(regex).append("\")}");
         ResultSet resultSet = modelDao.queryModel(targetModel.getModelName().get(), queryString.toString());
         List<Object> resources = new LinkedList<>();
         while (resultSet.hasNext()) {
